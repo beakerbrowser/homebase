@@ -4,9 +4,11 @@
 
 Easy-to-administer server for [Dat](https://datprotocol.com) which integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) using the [Pinning Service API](#TODO).
 
-Homebase is designed for single users to quickly setup on their own linux-based servers and VPSes. It provides most of the same capabilities as [Hashbase](https://hashbase.io), but only supports one user. That makes it much easier to administer, since you can just use the shell and some config files. It also supports adding & removing Dat archives using a HTTP API, which makes it possible to publish to Homebase via Beaker.
+Homebase is designed for single users to quickly setup on their own linux-based servers and VPSes. It provides most of the same capabilities as [Hashbase](https://hashbase.io), but only supports one user. That makes it much easier to administer, since you can just use the shell and some config files.
 
-How it works:
+It also supports adding & removing Dat archives using a HTTP API, which makes it possible to publish to Homebase via Beaker.
+
+## How it works
 
  - You setup a server with a base domain (ie `yourdomain.com`) and run Homebase as a daemon.
  - You add Dat archives to Homebase and it acts as a peer to keep the archive online.
@@ -30,7 +32,7 @@ Other features:
  - TLS certs are automatically fetched with Let's Encrypt.
  - There's an optional [metrics dashboard](#metrics-dashboard) if you want to track analytics.
 
-## Getting started (Ubuntu)
+## Installation (Ubuntu)
 
 You will need [nodejs](https://nodejs.org) version 4.9.1 or greater.
 
@@ -82,7 +84,7 @@ npm install -g pm2
 
 Next, [setup your daemon](#setup).
 
-### Setup
+## Setup
 
 If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend `pm2`.
 
