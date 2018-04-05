@@ -22,7 +22,6 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [How it works](#how-it-works)
 - [Installation (Ubuntu)](#installation-ubuntu)
   - [Install script](#install-script)
   - [Manual install steps (alternative to install script)](#manual-install-steps-alternative-to-install-script)
@@ -36,13 +35,15 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
   - [directory](#directory)
   - [domain](#domain)
   - [httpMirror](#httpmirror)
-  - [webapi.enabled](#webapienabled)
+  - [webapi](#webapi)
+  - [webapi.username](#webapiusername)
   - [webapi.password](#webapipassword)
+  - [letsencrypt](#letsencrypt)
   - [letsencrypt.email](#letsencryptemail)
   - [letsencrypt.agreeTos](#letsencryptagreetos)
   - [ports.http](#portshttp)
   - [ports.https](#portshttps)
-  - [dashboard.enabled](#dashboardenabled)
+  - [dashboard](#dashboard)
   - [dashboard.port](#dashboardport)
   - [dats](#dats)
   - [dats.*.url](#datsurl)
@@ -273,13 +274,21 @@ The DNS domain of your homebase instance.
 
 Set to `true` to provide https mirroring of your Dat archives. Defaults to true.
 
-### webapi.enabled
+### webapi
 
-Set to `true` to provide the [Pinning Service API](#TODO) for integration with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat). Defaults to false.
+Set to `false` to disable the [Pinning Service API](#TODO) which enables publishing to Homebase with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat). Defaults to `false`.
+
+### webapi.username
+
+Sets the username for your pinning service API.
 
 ### webapi.password
 
-Sets the password for your pinning service API. The username will be `admin`.
+Sets the password for your pinning service API.
+
+### letsencrypt
+
+Set to `false` to disable Lets Encrypt's automatic SSL certificate provisioning. Defaults to `false`.
 
 ### letsencrypt.email
 
@@ -299,9 +308,9 @@ HTTP automatically redirects to HTTPS.
 
 The port to serve the HTTPS sites. Defaults to 443.
 
-### dashboard.enabled
+### dashboard
 
-Set to `true` to provide the [prometheus metrics dashboard](#metrics-dashboard). Defaults to false.
+Set to `false` to disable the [prometheus metrics dashboard](#metrics-dashboard). Defaults to `false`.
 
 ### dashboard.port
 
