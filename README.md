@@ -130,22 +130,16 @@ httpMirror: true       # enables http mirrors of the dats
 ports:
   http: 80             # HTTP port for redirects or non-SSL serving
   https: 443           # HTTPS port for serving mirrored content & DNS data
-
-# beaker/dat integration
-webapi:
-  enabled: true        # enables publishing to Homebase from Beaker & Dat-CLI
-  username:            # the username for publishing from Beaker/Dat-CLI
-  password:            # the password for publishing from Beaker/Dat-CLI
-
-# lets-encrypt setup
-letsencrypt:
+letsencrypt:           # set to false to disable lets-encrypt
   email:               # you must provide your email to LE for admin
   agreeTos: true       # you must agree to the LE terms (set to true)
-
-# metrics dashboard
-dashboard:
-  enabled: true        # enables the metrics dashboard
+dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
+
+# enable publishing to Homebase from Beaker & Dat-CLI
+webapi:                # set to false to disable
+  username:            # the username for publishing from Beaker/Dat-CLI
+  password:            # the password for publishing from Beaker/Dat-CLI
 
 # enter your pinned dats here
 dats:
