@@ -124,40 +124,50 @@ emacs ~/.homebase.yml
 Here is an example config file:
 
 ```yaml
-directory: ~/.homebase    # where your data will be stored
-domain:                   # enter your homebase instance's domain here
-httpMirror: true          # enables http mirrors of the dats
-webapi:
-  enabled: true           # enables integration with Beaker & Dat CLI
-  password:               # enter your password here
-letsencrypt:
-  email:                  # enter your personal email here
-  agreeTos: true          # you must agree to the LE terms (set to true)
+directory: ~/.homebase # where your data will be stored
+domain:                # enter your homebase instance's domain here
+httpMirror: true       # enables http mirrors of the dats
 ports:
-  http: 80                # HTTP port for redirects or non-SSL serving
-  https: 443              # HTTPS port for serving mirrored content & DNS data
+  http: 80             # HTTP port for redirects or non-SSL serving
+  https: 443           # HTTPS port for serving mirrored content & DNS data
+
+# beaker/dat integration
+webapi:
+  enabled: true        # enables publishing to Homebase from Beaker & Dat-CLI
+  username:            # the username for publishing from Beaker/Dat-CLI
+  password:            # the password for publishing from Beaker/Dat-CLI
+
+# lets-encrypt setup
+letsencrypt:
+  email:               # you must provide your email to LE for admin
+  agreeTos: true       # you must agree to the LE terms (set to true)
+
+# metrics dashboard
 dashboard:
-  enabled: true           # enables the metrics dashboard
-  port: 8089              # port for accessing the metrics dashboard
+  enabled: true        # enables the metrics dashboard
+  port: 8089           # port for accessing the metrics dashboard
+
+# enter your pinned dats here
 dats:
-  # enter your pinned dats here
-  - url:                  # URL of the dat to be pinned
-    name:                 # the name of the dat (sets the subdomain)
-    domain:               # (optional) the additional domains
+  - url:               # URL of the dat to be pinned
+    name:              # the name of the dat (sets the subdomain)
+    domain:            # (optional) the additional domains
+
+# enter any proxied routes here
 proxies:
-  # enter any proxied routes here
-  - from:                 # the domain to accept requests from
-    to:                   # the domain (& port) to target
+  - from:              # the domain to accept requests from
+    to:                # the domain (& port) to target
+
+# enter any redirect routes here
 redirects:
-  # enter any redirect routes here
-  - from:                 # the domain to accept requests from
-    to:                   # the domain to redirect to
+  - from:              # the domain to accept requests from
+    to:                # the domain to redirect to
 ```
 
 You'll want to configure the following items:
 
  - **Domain**. Set the `domain:` field to the top-level domain name of your Homebase instance. New archives will be hosted under its subdomains.
- - **Web API**. Set a password on the Web API if you want to publish to your Homebase using Beaker or the Dat CLI.
+ - **Web API**. Set a username and password on the Web API if you want to publish to your Homebase using Beaker or the Dat CLI.
  - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues. (Set this to `false` if you are running Homebase behind a proxy like Apache or Nginx.)
  - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `domain` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
 
