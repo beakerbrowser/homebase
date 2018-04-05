@@ -2,11 +2,19 @@
 
 **WIP: not ready for anybody to use**
 
-Easy-to-administer server for [Dat](https://datprotocol.com) which integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) using the [Pinning Service API](#TODO).
+Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
 
-Homebase is designed for single users to quickly setup on their own linux-based servers and VPSes. It provides most of the same capabilities as [Hashbase](https://hashbase.io), but only supports one user. That makes it much easier to administer, since you can just use the shell and some config files.
-
-It also supports adding & removing Dat archives using a HTTP API, which makes it possible to publish to Homebase via Beaker.
+ - **Easy**. Designed for easy setup on linux-based servers and VPSes.
+ - **Useful**. Provides most of the features from [Hashbase](https://hashbase.io) but for a single user.
+ - **Accessible**. Integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) to add/remove Dats using the [Pinning Service API](#TODO).
+ - **Automatic subdomains**
+   - You setup Homebase at a base domain (eg `yourdomain.com`).
+   - You give your dats a name when you upload them (eg `mysite`).
+   - Homebase gives the dat a subdomain (eg `dat://mysite.yourdomain.com`).
+ - **Custom domains**. Any dat can be given additional domain names for hosting.
+ - **HTTPS mirroring** (optional). Any dat site can be accessed over https at the same domain.
+ - **Let's Encrypt** (optional). SSL certificates are fetched automatically.
+ - **Metrics dashboard** (optional). Track the stats on your dats.
 
 ## Table of contents
 
@@ -48,30 +56,6 @@ It also supports adding & removing Dat archives using a HTTP API, which makes it
   - [redirects.*.to](#redirectsto)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## How it works
-
- - You setup a server with a base domain (ie `yourdomain.com`) and run Homebase as a daemon.
- - You add Dat archives to Homebase and it acts as a peer to keep the archive online.
- - Each archive is given a name when its added to Homebase. That archive then becomes available at `dat://{name}.yourdomain.com`.
- - If enabled, Homebase can provide mirroring for the archives over https, so that they are accessible at `https://{name}.yourdomain.dom`.
-
-Custom domain names:
-
- - You can also set custom domains for your archives, so they're also available at `dat://{customdomain}`.
- - HTTPS mirroring also works on the custom domain, ie `https://{customdomain}`.
-
-[Beaker](https://beakerbrowser.com) and [Dat CLI](https://npm.im/dat) integration by the [Pinning Service API](#TODO):
-
- - You specify a password for the `admin` account.
- - The pinning service is made available at `https://yourdomain.com`.
- - You add `yourdomain.com` to Beaker as one of your pinning services.
- - You can now add & remove archives to your Homebase using Beaker.
-
-Other features:
-
- - TLS certs are automatically fetched with Let's Encrypt.
- - There's an optional [metrics dashboard](#metrics-dashboard) if you want to track analytics.
 
 ## Installation (Ubuntu)
 
@@ -267,6 +251,8 @@ letsencrypt: false
 ports:
   http: 8080
 ```
+
+You will need to add all domains to your Nginx/Apache config.
 
 ## Configuration file
 
