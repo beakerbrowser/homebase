@@ -4,17 +4,17 @@
 
 Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
 
- - **Easy**. Designed for easy setup on linux-based servers and VPSes.
- - **Useful**. Provides most of the features from [Hashbase](https://hashbase.io) but for a single user.
+ - **Easy**. Designed for fast setup on linux-based servers and VPSes.
+ - **Useful**. Provides the same features as [Hashbase](https://hashbase.io) but easier to self-host.
  - **Accessible**. Integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) to add/remove Dats using the [Pinning Service API](#TODO).
- - **Automatic subdomains**
+ - **Automatic subdomains**.
    - You setup Homebase at a base domain (eg `yourdomain.com`).
    - You give your dats a name when you upload them (eg `mysite`).
    - Homebase gives the dat a subdomain (eg `dat://mysite.yourdomain.com`).
- - **Custom domains**. Any dat can be given additional domain names for hosting.
- - **HTTPS mirroring** (optional). Any dat site can be accessed over https at the same domain.
- - **Let's Encrypt** (optional). SSL certificates are fetched automatically.
- - **Metrics dashboard** (optional). Track the stats on your dats.
+ - **Custom domains**. Any dat can be given additional custom domain names.
+ - **HTTPS mirroring (optional)**. Any dat site can be accessed over https at the same domain.
+ - **Let's Encrypt (optional)**. SSL certificates are fetched automatically.
+ - **Metrics dashboard (optional)**. Track the stats on your dats.
 
 ## Table of contents
 
@@ -100,20 +100,16 @@ Because Homebase will use privileged ports 80 and 443, you'll need to give nodej
 sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 ```
 
-Finally, to manage your daemon, install [pm2](https://www.npmjs.com/package/pm2):
-
-```js
-# install pm2
-npm install -g pm2
-```
-
 Next, [setup your daemon](#setup).
 
 ## Setup
 
-If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend `pm2`.
+If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
 
 ```
+# install pm2
+npm install -g pm2
+
 # start homebase
 pm2 start homebase
 ```
@@ -128,31 +124,34 @@ emacs ~/.homebase.yml
 Here is an example config file:
 
 ```yaml
-directory: ~/.homebase
-domain: # enter your homebase instance's domain here
-httpMirror: true
+directory: ~/.homebase    # where your data will be stored
+domain:                   # enter your homebase instance's domain here
+httpMirror: true          # enables http mirrors of the dats
 webapi:
-  enabled: true
-  password: # enter your password here
+  enabled: true           # enables integration with Beaker & Dat CLI
+  password:               # enter your password here
 letsencrypt:
-  email: # enter your personal email here
-  agreeTos: true
+  email:                  # enter your personal email here
+  agreeTos: true          # you must agree to the LE terms (set to true)
 ports:
-  http: 80
-  https: 443
+  http: 80                # HTTP port for redirects or non-SSL serving
+  https: 443              # HTTPS port for serving mirrored content & DNS data
 dashboard:
-  enabled: true
-  port: 8089
+  enabled: true           # enables the metrics dashboard
+  port: 8089              # port for accessing the metrics dashboard
 dats:
-  - url: # enter the URL of the dat here
-    name: # enter the name of the dat here
-    domain: # enter one or more domains here
+  # enter your pinned dats here
+  - url:                  # URL of the dat to be pinned
+    name:                 # the name of the dat (sets the subdomain)
+    domain:               # (optional) the additional domains
 proxies:
-  - from: # enter the domain to accept requests from
-    to: # enter the domain (& port) to target
+  # enter any proxied routes here
+  - from:                 # the domain to accept requests from
+    to:                   # the domain (& port) to target
 redirects:
-  - from: # enter the domain to accept requests from
-    to: # enter the domain to redirect to
+  # enter any redirect routes here
+  - from:                 # the domain to accept requests from
+    to:                   # the domain to redirect to
 ```
 
 You'll want to configure the following items:
@@ -162,7 +161,7 @@ You'll want to configure the following items:
  - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues. (Set this to `false` if you are running Homebase behind a proxy like Apache or Nginx.)
  - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `domain` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
 
-Here's an example dat with multiple domains:
+Here's an example dat with multiple domains. If the Homebase instance is hosted at `yourdomain.com`, then this dat would be available at `dat://mysite.yourdomain.com`, `dat://mysite.com`, and `dat://my-site.com`. (Don't forget to setup the DNS records!)
 
 ```yaml
 dats:
@@ -173,7 +172,7 @@ dats:
       - my-site.com
 ```
 
-Here's an example proxy rule:
+If your Homebase is running on ports 80/443, and you have other Web servers running on your server, you might need Homebase to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
 
 ```yaml
 proxies:
@@ -181,7 +180,7 @@ proxies:
     to: http://localhost:8080
 ```
 
-Here's an example redirect rule:
+Sometimes you need to redirect from old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
 
 ```yaml
 redirects:
