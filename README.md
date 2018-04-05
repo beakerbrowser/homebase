@@ -8,6 +8,47 @@ Homebase is designed for single users to quickly setup on their own linux-based 
 
 It also supports adding & removing Dat archives using a HTTP API, which makes it possible to publish to Homebase via Beaker.
 
+## Table of contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [How it works](#how-it-works)
+- [Installation (Ubuntu)](#installation-ubuntu)
+  - [Install script](#install-script)
+  - [Manual install steps (alternative to install script)](#manual-install-steps-alternative-to-install-script)
+- [Setup](#setup)
+- [Command Line Flags](#command-line-flags)
+- [Env Vars](#env-vars)
+- [Guides](#guides)
+  - [Metrics Dashboard](#metrics-dashboard)
+  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
+- [Configuration file](#configuration-file)
+  - [directory](#directory)
+  - [domain](#domain)
+  - [httpMirror](#httpmirror)
+  - [webapi.enabled](#webapienabled)
+  - [webapi.password](#webapipassword)
+  - [letsencrypt.email](#letsencryptemail)
+  - [letsencrypt.agreeTos](#letsencryptagreetos)
+  - [ports.http](#portshttp)
+  - [ports.https](#portshttps)
+  - [dashboard.enabled](#dashboardenabled)
+  - [dashboard.port](#dashboardport)
+  - [dats](#dats)
+  - [dats.*.url](#datsurl)
+  - [dats.*.name](#datsname)
+  - [dats.*.domain](#datsdomain)
+  - [proxies](#proxies)
+  - [proxies.*.from](#proxiesfrom)
+  - [proxies.*.to](#proxiesto)
+  - [redirects](#redirects)
+  - [redirects.*.from](#redirectsfrom)
+  - [redirects.*.to](#redirectsto)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## How it works
 
  - You setup a server with a base domain (ie `yourdomain.com`) and run Homebase as a daemon.
@@ -134,7 +175,7 @@ You'll want to configure the following items:
 
  - **Domain**. Set the `domain:` field to the top-level domain name of your Homebase instance. New archives will be hosted under its subdomains.
  - **Web API**. Set a password on the Web API if you want to publish to your Homebase using Beaker or the Dat CLI.
- - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues.
+ - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues. (Set this to `false` if you are running Homebase behind a proxy like Apache or Nginx.)
  - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `domain` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
 
 Here's an example dat with multiple domains:
@@ -176,7 +217,58 @@ To stop the daemon, run
 pm2 stop homebase
 ```
 
-## Config
+## Command Line Flags
+
+  - `--config <path>` use the config file at the given path instead of the default `~/.dathttpd.yml`. Overrides the value of the `DATHTTPD_CONFIG` env var.
+
+## Env Vars
+
+  - `HOMEBASE_CONFIG=cfg_file_path` specify an alternative path to the config than `~/.homebase.yml`
+  - `NODE_ENV=debug|staging|production` set to `debug` or `staging` to use the lets-encrypt testing servers.
+
+## Guides
+
+### Metrics Dashboard
+
+Homebase has built-in support for [Prometheus](https://prometheus.io), which can be visualized by [Grafana](http://grafana.org/).
+
+![./grafana-screenshot.png](./grafana-screenshot.png)
+
+Homebase exposes its metrics at port 8089. Prometheus periodically scrapes the metrics, and stores them in a database. Grafana provides a nice dashboard. It's a little daunting at first, but setup should be relatively painless.
+
+Follow these steps:
+
+ 1. [Install Prometheus](https://prometheus.io/download/) on your server.
+ 2. [Install Grafana](http://grafana.org/download/) on your server.
+ 3. Update the `prometheus.yml` config.
+ 4. Start prometheus and grafana.
+ 5. Login to grafana.
+ 6. Add prometheus as a data source to grafana. (It should be running at localhost:9090.)
+ 7. Import [this grafana dashboard](./grafana-dashboard.json).
+
+Your prometheus.yml config should include have the scrape_configs set like this:
+
+```yml
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'homebase'
+    static_configs:
+      - targets: ['localhost:8089']
+```
+
+### Running Homebase behind Apache or Nginx
+
+If you are running Homebase on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to disable Let's Encrypt and to set the http port:
+
+```yaml
+letsencrypt: false
+ports:
+  http: 8080
+```
+
+## Configuration file
 
 The fields in detail.
 
@@ -267,44 +359,3 @@ The domain to redirect from.
 ### redirects.*.to
 
 The base URL to redirect to.
-
-## Command Line Flags
-
-  - `--config <path>` use the config file at the given path instead of the default `~/.dathttpd.yml`. Overrides the value of the `DATHTTPD_CONFIG` env var.
-
-## Env Vars
-
-  - `HOMEBASE_CONFIG=cfg_file_path` specify an alternative path to the config than `~/.homebase.yml`
-  - `NODE_ENV=debug|staging|production` set to `debug` or `staging` to use the lets-encrypt testing servers.
-
-## Metrics Dashboard
-
-Homebase has built-in support for [Prometheus](https://prometheus.io), which can be visualized by [Grafana](http://grafana.org/).
-
-![./grafana-screenshot.png](./grafana-screenshot.png)
-
-Homebase exposes its metrics at port 8089. Prometheus periodically scrapes the metrics, and stores them in a database. Grafana provides a nice dashboard. It's a little daunting at first, but setup should be relatively painless.
-
-Follow these steps:
-
- 1. [Install Prometheus](https://prometheus.io/download/) on your server.
- 2. [Install Grafana](http://grafana.org/download/) on your server.
- 3. Update the `prometheus.yml` config.
- 4. Start prometheus and grafana.
- 5. Login to grafana.
- 6. Add prometheus as a data source to grafana. (It should be running at localhost:9090.)
- 7. Import [this grafana dashboard](./grafana-dashboard.json).
-
-Your prometheus.yml config should include have the scrape_configs set like this:
-
-```yml
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
-  - job_name: 'homebase'
-    static_configs:
-      - targets: ['localhost:8089']
-```
-
-Report any issues you have along the way!
