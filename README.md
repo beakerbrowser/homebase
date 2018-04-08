@@ -36,25 +36,26 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
   - [domain](#domain)
   - [httpMirror](#httpmirror)
   - [webapi](#webapi)
-  - [webapi.username](#webapiusername)
-  - [webapi.password](#webapipassword)
+    - [webapi.username](#webapiusername)
+    - [webapi.password](#webapipassword)
   - [letsencrypt](#letsencrypt)
-  - [letsencrypt.email](#letsencryptemail)
-  - [letsencrypt.agreeTos](#letsencryptagreetos)
-  - [ports.http](#portshttp)
-  - [ports.https](#portshttps)
+    - [letsencrypt.email](#letsencryptemail)
+    - [letsencrypt.agreeTos](#letsencryptagreetos)
+  - [ports](#ports)
+    - [ports.http](#portshttp)
+    - [ports.https](#portshttps)
   - [dashboard](#dashboard)
-  - [dashboard.port](#dashboardport)
+    - [dashboard.port](#dashboardport)
   - [dats](#dats)
-  - [dats.*.url](#datsurl)
-  - [dats.*.name](#datsname)
-  - [dats.*.domain](#datsdomain)
+    - [dats.*.url](#datsurl)
+    - [dats.*.name](#datsname)
+    - [dats.*.otherDomains](#datsotherdomains)
   - [proxies](#proxies)
-  - [proxies.*.from](#proxiesfrom)
-  - [proxies.*.to](#proxiesto)
+    - [proxies.*.from](#proxiesfrom)
+    - [proxies.*.to](#proxiesto)
   - [redirects](#redirects)
-  - [redirects.*.from](#redirectsfrom)
-  - [redirects.*.to](#redirectsto)
+    - [redirects.*.from](#redirectsfrom)
+    - [redirects.*.to](#redirectsto)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -105,7 +106,7 @@ Next, [setup your daemon](#setup).
 
 ## Command Line Flags
 
-  - `--config <path>` use the config file at the given path instead of the default `~/.dathttpd.yml`. Overrides the value of the `DATHTTPD_CONFIG` env var.
+  - `--config <path>` use the config file at the given path instead of the default `~/.homebase.yml`. Overrides the value of the `HOMEBASE_CONFIG` env var.
 
 ## Env Vars
 
@@ -157,7 +158,7 @@ webapi:                # set to false to disable
 dats:
   - url:               # URL of the dat to be pinned
     name:              # the name of the dat (sets the subdomain)
-    domain:            # (optional) the additional domains
+    otherDomains:      # (optional) the additional domains
 
 # enter any proxied routes here
 proxies:
@@ -175,7 +176,7 @@ You'll want to configure the following items:
  - **Domain**. Set the `domain:` field to the top-level domain name of your Homebase instance. New archives will be hosted under its subdomains.
  - **Web API**. Set a username and password on the Web API if you want to publish to your Homebase using Beaker or the Dat CLI.
  - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues. (Set this to `false` if you are running Homebase behind a proxy like Apache or Nginx.)
- - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `domain` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
+ - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `otherDomains` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
 
 Here's an example dat with multiple domains. If the Homebase instance is hosted at `yourdomain.com`, then this dat would be available at `dat://mysite.yourdomain.com`, `dat://mysite.com`, and `dat://my-site.com`. (Don't forget to setup the DNS records!)
 
@@ -183,7 +184,7 @@ Here's an example dat with multiple domains. If the Homebase instance is hosted 
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
     name: mysite
-    domain:
+    otherDomains:
       - mysite.com
       - my-site.com
 ```
@@ -278,11 +279,18 @@ Set to `true` to provide https mirroring of your Dat archives. Defaults to true.
 
 Set to `false` to disable the [Pinning Service API](#TODO) which enables publishing to Homebase with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat). Defaults to `false`.
 
-### webapi.username
+```yaml
+# enable publishing to Homebase from Beaker & Dat-CLI
+webapi:                # set to false to disable
+  username:            # the username for publishing from Beaker/Dat-CLI
+  password:            # the password for publishing from Beaker/Dat-CLI
+```
+
+#### webapi.username
 
 Sets the username for your pinning service API.
 
-### webapi.password
+#### webapi.password
 
 Sets the password for your pinning service API.
 
@@ -290,21 +298,37 @@ Sets the password for your pinning service API.
 
 Set to `false` to disable Lets Encrypt's automatic SSL certificate provisioning. Defaults to `false`.
 
-### letsencrypt.email
+```yaml
+letsencrypt:           # set to false to disable lets-encrypt
+  email:               # you must provide your email to LE for admin
+  agreeTos: true       # you must agree to the LE terms (set to true)
+```
+
+#### letsencrypt.email
 
 The email to send Lets Encrypt notices to.
 
-### letsencrypt.agreeTos
+#### letsencrypt.agreeTos
 
 Do you agree to the terms of service of Lets Encrypt? (Required, must be true)
 
-### ports.http
+### ports
+
+Contains the ports for http and https.
+
+```yaml
+ports:
+  http: 80             # HTTP port for redirects or non-SSL serving
+  https: 443           # HTTPS port for serving mirrored content & DNS data
+```
+
+#### ports.http
 
 The port to serve the HTTP sites. Defaults to 80.
 
 HTTP automatically redirects to HTTPS.
 
-### ports.https
+#### ports.https
 
 The port to serve the HTTPS sites. Defaults to 443.
 
@@ -312,7 +336,12 @@ The port to serve the HTTPS sites. Defaults to 443.
 
 Set to `false` to disable the [prometheus metrics dashboard](#metrics-dashboard). Defaults to `false`.
 
-### dashboard.port
+```yaml
+dashboard:             # set to false to disable
+  port: 8089           # port for accessing the metrics dashboard
+```
+
+#### dashboard.port
 
 The port to serve the [prometheus metrics dashboard](#metrics-dashboard). Defaults to 8089.
 
@@ -322,38 +351,94 @@ A listing of the Dat archives to host.
 
 You'll need to configure the DNS entry for the hostname to point to the server. For instance, if using `site.yourhostname.com`, you'll need a DNS entry pointing `site.yourhostname.com` to the server.
 
-### dats.*.url
+```yaml
+dats:
+  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+    name: mysite
+    otherDomains:
+      - mysite.com
+      - my-site.com
+```
 
-The Dat URL of the site to host.
+#### dats.*.url
 
-### dats.*.name
+The Dat URL of the site to host. Should be a 'raw' dat url (no DNS hostname). Example values:
+
+```
+868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f
+dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+```
+
+#### dats.*.name
 
 The name of the Dat archive. Must be unique on the Homebase instance. The archive will be hosted at `{name}.yourhostname.com`. You'll need to configure the DNS entry for the hostname to point to the server.
 
-### dats.*.domain
+#### dats.*.otherDomains
 
-Additional domains of the Dat archive. Can be a string or a list of strings. You'll need to configure the DNS entry for the hostname to point to the server.
+Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
+
+```
+mysite.com
+foo.bar.edu
+best-site-ever.link
+```
 
 ### proxies
 
 A listing of domains to proxy. Useful when your server has other services running that you need available.
 
-### proxies.*.from
+```yaml
+proxies:
+  - from: my-proxy.com
+    to: http://localhost:8080
+```
 
-The domain to proxy from.
+#### proxies.*.from
 
-### proxies.*.to
+The domain to proxy from. Should be a domain name. Example values:
 
-The protocol, domain, and port to proxy to.
+```
+mysite.com
+foo.bar.edu
+best-site-ever.link
+```
+
+#### proxies.*.to
+
+The protocol, domain, and port to proxy to. Should be an origin (scheme / hostname / port). Example values:
+
+```
+https://mysite.com/
+http://localhost:8080/
+http://127.0.0.1:123/
+```
 
 ### redirects
 
 A listing of domains to redirect.
 
-### redirects.*.from
+```yaml
+redirects:
+  - from: my-old-site.com
+    to: https://my-site.com
+```
 
-The domain to redirect from.
+#### redirects.*.from
 
-### redirects.*.to
+The domain to redirect from. Should be a domain name. Example values:
 
-The base URL to redirect to.
+```
+mysite.com
+foo.bar.edu
+best-site-ever.link
+```
+
+#### redirects.*.to
+
+The base URL to redirect to. Should be an origin (scheme / hostname / port). Example values:
+
+```
+https://mysite.com/
+http://localhost:8080/
+http://127.0.0.1:123/
+```

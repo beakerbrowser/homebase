@@ -1,0 +1,36 @@
+{
+  "name": "homebase",
+  "version": "1.0.0",
+  "description": "An easy-to-administer pinning server for Dat.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "dependencies": {
+    "is-domain-name": "^1.0.1",
+    "is-http-url": "^2.0.0",
+    "js-yaml": "^3.11.0",
+    "ms": "^2.0.0"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0"
+  },
+  "scripts": {
+    "test": "ava ./test/*-test.js -s"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beakerbrowser/homebase.git"
+  },
+  "keywords": [
+    "dat",
+    "server"
+  ],
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/beakerbrowser/homebase/issues"
+  },
+  "homepage": "https://github.com/beakerbrowser/homebase#readme"
+}
