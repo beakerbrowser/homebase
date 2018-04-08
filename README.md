@@ -103,7 +103,18 @@ sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 
 Next, [setup your daemon](#setup).
 
-## Setup
+## Command Line Flags
+
+  - `--config <path>` use the config file at the given path instead of the default `~/.dathttpd.yml`. Overrides the value of the `DATHTTPD_CONFIG` env var.
+
+## Env Vars
+
+  - `HOMEBASE_CONFIG=cfg_file_path` specify an alternative path to the config than `~/.homebase.yml`
+  - `NODE_ENV=debug|staging|production` set to `debug` or `staging` to use the lets-encrypt testing servers.
+
+## Guides
+
+### Setup
 
 If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
 
@@ -204,17 +215,6 @@ To stop the daemon, run
 # stop homebase
 pm2 stop homebase
 ```
-
-## Command Line Flags
-
-  - `--config <path>` use the config file at the given path instead of the default `~/.dathttpd.yml`. Overrides the value of the `DATHTTPD_CONFIG` env var.
-
-## Env Vars
-
-  - `HOMEBASE_CONFIG=cfg_file_path` specify an alternative path to the config than `~/.homebase.yml`
-  - `NODE_ENV=debug|staging|production` set to `debug` or `staging` to use the lets-encrypt testing servers.
-
-## Guides
 
 ### Metrics Dashboard
 
