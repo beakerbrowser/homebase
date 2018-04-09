@@ -17,6 +17,7 @@
     "is-domain-name": "^1.0.1",
     "is-http-url": "^2.0.0",
     "js-yaml": "^3.11.0",
+    "le-store-certbot": "^2.0.5",
     "lodash.flatten": "^4.4.0",
     "mkdirp": "^0.5.1",
     "ms": "^2.0.0",
