@@ -2,7 +2,7 @@
 const os = require('os')
 const path = require('path')
 const fs = require('fs')
-const HomebaseConfig = require('./lib/config')
+const {HomebaseConfig} = require('./lib/config')
 const server = require('./lib/server')
 
 const defaultConfigPath = process.env.HOMEBASE_CONFIG || path.join(os.homedir(), '.homebase.yml')

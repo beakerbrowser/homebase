@@ -19,6 +19,7 @@
     "js-yaml": "^3.11.0",
     "le-store-certbot": "^2.0.5",
     "lodash.flatten": "^4.4.0",
+    "lodash.pick": "^4.4.0",
     "mkdirp": "^0.5.1",
     "ms": "^2.0.0",
     "prom-client": "^11.0.0",

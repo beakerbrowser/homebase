@@ -1,7 +1,12 @@
 const test = require('ava')
 const path = require('path')
 const os = require('os')
-const HomebaseConfig = require('../lib/config')
+const {
+  HomebaseConfig, 
+  HomebaseDatConfig,
+  HomebaseProxyConfig,
+  HomebaseRedirectConfig
+} = require('../lib/config')
 
 const scaffold = (name) => path.join(__dirname, 'scaffold', name)
 const DATADIR = path.join(os.homedir(), '.homebase')
@@ -139,6 +144,67 @@ test('can do (mostly) everything disabled', t => {
   t.deepEqual(cfg.proxies, [])
   t.deepEqual(cfg.redirects, [])
   t.deepEqual(cfg.hostnames, [undefined])
+})
+
+test('checksums correctly detect differences', t => {
+  var cfg = new HomebaseConfig()
+  cfg.canonical.domain = 'foo.bar'
+
+  t.deepEqual(
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    '(dat) Equal config is equal checksum'
+  )
+  t.deepEqual(
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    (new HomebaseDatConfig({url: '1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    '(dat) Formatting differences in url is still equal checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site-one', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    '(dat) Changed name is changed checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site-one.com']}, cfg)).checksum,
+    '(dat) Changed domain is changed checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseDatConfig({url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    (new HomebaseDatConfig({url: 'dat://0f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/', name: 'site1', otherDomains: ['site1.com', 'site-one.com']}, cfg)).checksum,
+    '(dat) Changed dat is changed checksum'
+  )
+  t.deepEqual(
+    (new HomebaseProxyConfig({from: 'myproxy.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    (new HomebaseProxyConfig({from: 'myproxy.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    '(proxy) Equal config is equal checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseProxyConfig({from: 'myproxy.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    (new HomebaseProxyConfig({from: 'my-proxy.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    '(proxy) Changed from is changed checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseProxyConfig({from: 'myproxy.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    (new HomebaseProxyConfig({from: 'myproxy.com', to: 'https://my-site.com/'}, cfg)).checksum,
+    '(proxy) Changed from is changed checksum'
+  )
+  t.deepEqual(
+    (new HomebaseRedirectConfig({from: 'myredirect.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    (new HomebaseRedirectConfig({from: 'myredirect.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    '(redirect) Equal config is equal checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseRedirectConfig({from: 'myredirect.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    (new HomebaseRedirectConfig({from: 'my-redirect.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    '(redirect) Changed from is changed checksum'
+  )
+  t.notDeepEqual(
+    (new HomebaseRedirectConfig({from: 'myredirect.com', to: 'https://mysite.com/'}, cfg)).checksum,
+    (new HomebaseRedirectConfig({from: 'myredirect.com', to: 'https://my-site.com/'}, cfg)).checksum,
+    '(redirect) Changed from is changed checksum'
+  )
 })
 
 function extractDatCfg (cfg) {

@@ -5,8 +5,8 @@
 TODOs
 
  - [x] Config management
- - [ ] Working server
- - [ ] Reload config on change yaml (need to reliably detect all changes)
+ - [x] Working server
+ - [x] Reload config on change yaml
  - [ ] Web API
  - [ ] Install script
 
