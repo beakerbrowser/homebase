@@ -1,6 +1,14 @@
 # Homebase
 
-**WIP: not ready for anybody to use**
+# WIP: not ready for anybody to use
+
+TODOs
+
+ - [x] Config management
+ - [ ] Working server
+ - [ ] Reload config on change yaml (need to reliably detect all changes)
+ - [ ] Web API
+ - [ ] Install script
 
 Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
 
@@ -8,7 +16,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
  - **Useful**. Provides the same features as [Hashbase](https://hashbase.io) but easier to self-host.
  - **Accessible**. Integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) to add/remove Dats using the [Pinning Service API](#TODO).
  - **Automatic subdomains**.
-   - You setup Homebase at a base domain (eg `yourdomain.com`).
+   - You setup Homebase at a base domain (eg `yourdomain.com`) and point a wildcard DNS entry to the server.
    - You give your dats a name when you upload them (eg `mysite`).
    - Homebase gives the dat a subdomain (eg `dat://mysite.yourdomain.com`).
  - **Custom domains**. Any dat can be given additional custom domain names.
@@ -29,6 +37,8 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 - [Env Vars](#env-vars)
 - [Guides](#guides)
   - [Setup](#setup)
+  - [Port setup](#port-setup)
+  - [DNS records](#dns-records)
   - [Metrics Dashboard](#metrics-dashboard)
   - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
 - [Configuration file](#configuration-file)
@@ -205,17 +215,31 @@ redirects:
     to: https://my-site.com
 ```
 
-Some other steps to make sure your Homebase instance works:
-
- - **Firewall rules**. Make sure your server is accessible by port 80 (http), 443 (https), and 3282 (dat).
- - **DNS records**. Be sure to create A records for all of your domains which point to your server's IP address.
-
 To stop the daemon, run
 
 ```
 # stop homebase
 pm2 stop homebase
 ```
+
+### Port setup
+
+For Homebase to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (dat). Your firewall should be configured to allow traffic on those ports.
+
+If you get an EACCES error on startup, you either have a process using the port already, or you lack permission to use the port. Try `lsof -i tcp:80` or `lsof -i tcp:443` to see if there are any processes bound to the ports you need.
+
+If the ports are not in use, then it's probably a permissions problem. We recommend using the following command to solve that:
+
+```js
+# give node perms to use ports 80 and 443
+sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
+```
+
+This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in homebase allowing somebody to control your server.
+
+### DNS records
+
+You will need to create A records for all of the domains you use. For the subdomains, you can use a wildcard domain.
 
 ### Metrics Dashboard
 

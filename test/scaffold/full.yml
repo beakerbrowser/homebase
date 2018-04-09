@@ -28,18 +28,18 @@ dats:
 
 # enter any proxied routes here
 proxies:
-  - from: mysite.com
+  - from: myproxy.com
     to: https://mysite.com/
-  - from: foo.bar.edu
+  - from: foo.proxy.edu
     to: http://localhost:8080/
-  - from: best-site-ever
+  - from: best-proxy-ever
     to: http://127.0.0.1:123/
 
 # enter any redirect routes here
 redirects:
-  - from: mysite.com
+  - from: myredirect.com
     to: https://mysite.com/
-  - from: foo.bar.edu
+  - from: foo.redirect.edu
     to: http://localhost:8080/
-  - from: best-site-ever
+  - from: best-redirect-ever
     to: http://127.0.0.1:123/
