@@ -334,7 +334,7 @@ The email to send Lets Encrypt notices to.
 
 #### letsencrypt.agreeTos
 
-Do you agree to the terms of service of Lets Encrypt? (Required, must be true)
+Do you agree to the [terms of service of Lets Encrypt](https://letsencrypt.org/repository/)? (Required, must be true)
 
 ### ports
 
