@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "An easy-to-administer pinning server for Dat.",
   "main": "index.js",
+  "bin": {
+    "homebase": "./index.js"
+  },
   "directories": {
     "lib": "lib",
     "test": "test"
@@ -33,6 +36,7 @@
     "ava": "^0.25.0"
   },
   "scripts": {
+    "start": "node ./index.js",
     "test": "ava ./test/*-test.js -s"
   },
   "repository": {
