@@ -31,8 +31,6 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 
 
 - [Installation (Ubuntu)](#installation-ubuntu)
-  - [Install script](#install-script)
-  - [Manual install steps (alternative to install script)](#manual-install-steps-alternative-to-install-script)
 - [Command Line Flags](#command-line-flags)
 - [Env Vars](#env-vars)
 - [Guides](#guides)
@@ -71,25 +69,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 
 ## Installation (Ubuntu)
 
-You will need [nodejs](https://nodejs.org) version 4.9.1 or greater.
-
-### Install script
-
-To install or update Homebase, you can use the install script using curl:
-
-```
-curl -o- https://raw.githubusercontent.com/beakerbrowser/homebase/v1.0.0/install.sh | bash
-```
-
-or wget:
-
-```
-wget -qO- https://raw.githubusercontent.com/beakerbrowser/homebase/v1.0.0/install.sh | bash
-```
-
-Next, [setup your daemon](#setup).
-
-### Manual install steps (alternative to install script)
+You will need [nodejs](https://nodejs.org) version 4.9.1 or greater. (Consider using [nvm](https://nvm.sh) to get setup.)
 
 You'll need to install some build dependencies:
 
@@ -107,9 +87,16 @@ npm install -g @beaker/homebase
 
 Because Homebase will use privileged ports 80 and 443, you'll need to give nodejs permission to use them. (It's not recommended to run Homebase as super-user.)
 
-```js
+```
 # give node perms to use ports 80 and 443
 sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
+```
+
+If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
+
+```
+# install pm2
+npm install -g pm2
 ```
 
 Next, [setup your daemon](#setup).
@@ -126,16 +113,6 @@ Next, [setup your daemon](#setup).
 ## Guides
 
 ### Setup
-
-If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
-
-```
-# install pm2
-npm install -g pm2
-
-# start homebase
-pm2 start homebase
-```
 
 To configure your instance, edit `~/.homebase.yml`. You can edit this even if the homebase daemon is running, and it will automatically restart after changes to adopt the new config.
 
@@ -215,6 +192,13 @@ redirects:
     to: https://my-site.com
 ```
 
+Now you're ready to start Homebase! If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
+
+```
+# start homebase
+pm2 start homebase
+```
+
 To stop the daemon, run
 
 ```
@@ -230,7 +214,7 @@ If you get an EACCES error on startup, you either have a process using the port 
 
 If the ports are not in use, then it's probably a permissions problem. We recommend using the following command to solve that:
 
-```js
+```
 # give node perms to use ports 80 and 443
 sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 ```
