@@ -34,7 +34,10 @@
     "yargs": "^11.0.0"
   },
   "devDependencies": {
-    "ava": "^0.25.0"
+    "ava": "^0.25.0",
+    "request-promise-native": "^1.0.5",
+    "rimraf": "^2.6.2",
+    "tempy": "^0.2.1"
   },
   "scripts": {
     "start": "node ./index.js",

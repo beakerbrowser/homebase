@@ -1,14 +1,5 @@
 # Homebase
 
-# WIP: not ready for anybody to use
-
-TODOs
-
- - [x] Config management
- - [x] Working server
- - [x] Reload config on change yaml
- - [ ] Web API
-
 Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
 
  - **Easy**. Designed for fast setup on linux-based servers and VPSes.

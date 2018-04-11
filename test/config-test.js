@@ -2,7 +2,7 @@ const test = require('ava')
 const path = require('path')
 const os = require('os')
 const {
-  HomebaseConfig, 
+  HomebaseConfig,
   HomebaseDatConfig,
   HomebaseProxyConfig,
   HomebaseRedirectConfig
