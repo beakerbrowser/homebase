@@ -1,5 +1,5 @@
 {
-  "name": "homebase",
+  "name": "@beaker/homebase",
   "version": "1.0.0",
   "description": "An easy-to-administer pinning server for Dat.",
   "main": "index.js",
