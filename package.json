@@ -2,7 +2,7 @@
   "name": "@beaker/homebase",
   "version": "1.1.0",
   "description": "An easy-to-administer pinning server for Dat.",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "bin": {
     "homebase": "./index.js"
   },
