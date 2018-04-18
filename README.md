@@ -4,7 +4,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 
  - **Easy**. Designed for fast setup on linux-based servers and VPSes.
  - **Useful**. Provides the same features as [Hashbase](https://hashbase.io) but easier to self-host.
- - **Accessible**. Integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) to add/remove Dats using the [Pinning Service API](#TODO).
+ - **Accessible**. Integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) to add/remove Dats using the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/).
  - **Automatic subdomains**.
    - You setup Homebase at a base domain (eg `yourdomain.com`) and point a wildcard DNS entry to the server.
    - You give your dats a name when you upload them (eg `mysite`).
@@ -275,7 +275,7 @@ Set to `true` to provide https mirroring of your Dat archives. Defaults to true.
 
 ### webapi
 
-Set to `false` to disable the [Pinning Service API](#TODO) which enables publishing to Homebase with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat). Defaults to `false`.
+Set to `false` to disable the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/) which enables publishing to Homebase with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat). Defaults to `false`.
 
 ```yaml
 # enable publishing to Homebase from Beaker & Dat-CLI
