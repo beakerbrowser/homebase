@@ -104,12 +104,7 @@ Next, [setup your daemon](#setup).
 
 ### Setup
 
-To configure your instance, edit `~/.homebase.yml`. You can edit this even if the homebase daemon is running, and it will automatically restart after changes to adopt the new config.
-
-```
-# configure
-emacs ~/.homebase.yml
-```
+To configure your instance, edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved.
 
 Here is an example config file:
 
