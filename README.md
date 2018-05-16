@@ -59,7 +59,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 
 ## Installation (Ubuntu)
 
-You will need [nodejs](https://nodejs.org) version 4.9.1 or greater. (Consider using [nvm](https://nvm.sh) to get setup.)
+You will need [nodejs](https://nodejs.org) version 8 or greater. (Consider using [nvm](https://nvm.sh) to get setup.)
 
 You'll need to install some build dependencies:
 
