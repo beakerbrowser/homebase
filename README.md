@@ -36,6 +36,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
   - [webapi](#webapi)
     - [webapi.username](#webapiusername)
     - [webapi.password](#webapipassword)
+    - [webapi.domain](#webapidomain)
   - [letsencrypt](#letsencrypt)
     - [letsencrypt.email](#letsencryptemail)
     - [letsencrypt.agreeTos](#letsencryptagreetos)
@@ -54,6 +55,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
   - [redirects](#redirects)
     - [redirects.*.from](#redirectsfrom)
     - [redirects.*.to](#redirectsto)
+- [Changelog](#changelog)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -110,7 +112,6 @@ Here is an example config file:
 
 ```yaml
 directory: ~/.homebase # where your data will be stored
-domain:                # enter your homebase instance's domain here
 httpMirror: true       # enables http mirrors of the dats
 ports:
   http: 80             # HTTP port for redirects or non-SSL serving
@@ -123,6 +124,7 @@ dashboard:             # set to false to disable
 
 # enable publishing to Homebase from Beaker & Dat-CLI
 webapi:                # set to false to disable
+  domain:              # enter your web api's domain here
   username:            # the username for publishing from Beaker/Dat-CLI
   password:            # the password for publishing from Beaker/Dat-CLI
 
@@ -262,6 +264,8 @@ The directory where homebase will store your Dat archive's files. Defaults to ~/
 
 ### domain
 
+**DEPRECATED**. Use [webapi.domain](#webapi.domain) instead.
+
 The DNS domain of your homebase instance.
 
 ### httpMirror
@@ -275,6 +279,7 @@ Set to `false` to disable the [Pinning Service API](https://www.datprotocol.com/
 ```yaml
 # enable publishing to Homebase from Beaker & Dat-CLI
 webapi:                # set to false to disable
+  domain:              # the domain of the web api
   username:            # the username for publishing from Beaker/Dat-CLI
   password:            # the password for publishing from Beaker/Dat-CLI
 ```
@@ -286,6 +291,10 @@ Sets the username for your pinning service API.
 #### webapi.password
 
 Sets the password for your pinning service API.
+
+#### webapi.domain
+
+The DNS domain of your homebase instance.
 
 ### letsencrypt
 
@@ -435,3 +444,8 @@ https://mysite.com/
 http://localhost:8080/
 http://127.0.0.1:123/
 ```
+
+## Changelog
+
+ - V2
+   - Moved the `domain` config from the top of the yaml file to the `webapi` field. This makes it clearer what the domain applies to.

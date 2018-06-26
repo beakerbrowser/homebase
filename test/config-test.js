@@ -12,7 +12,6 @@ test('empty config', t => {
   t.deepEqual(cfg.canonical, {})
   t.deepEqual(cfg.configPath, scaffold('empty.yml'))
   t.deepEqual(cfg.directory, DATADIR)
-  t.deepEqual(cfg.domain, undefined)
   t.deepEqual(cfg.httpMirror, false)
   t.deepEqual(cfg.ports, {http: 80, https: 443})
   t.deepEqual(cfg.letsencrypt, false)
@@ -21,7 +20,7 @@ test('empty config', t => {
   t.deepEqual(cfg.dats, [])
   t.deepEqual(cfg.proxies, [])
   t.deepEqual(cfg.redirects, [])
-  t.deepEqual(cfg.hostnames, [undefined])
+  t.deepEqual(cfg.hostnames, [])
 })
 
 test('full config test', t => {
@@ -29,7 +28,6 @@ test('full config test', t => {
 
   t.deepEqual(cfg.canonical, {
     directory: '~/.homebase',
-    domain: 'foo.bar',
     httpMirror: true,
     ports: {
       http: 80,
@@ -40,7 +38,7 @@ test('full config test', t => {
       agreeTos: true
     },
     dashboard: {port: 8089},
-    webapi: {username: 'robert', password: 'hunter2'},
+    webapi: {domain: 'foo.bar', username: 'robert', password: 'hunter2'},
     dats: [
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
@@ -70,7 +68,6 @@ test('full config test', t => {
 
   t.deepEqual(cfg.configPath, scaffold('full.yml'))
   t.deepEqual(cfg.directory, DATADIR)
-  t.deepEqual(cfg.domain, 'foo.bar')
   t.deepEqual(cfg.httpMirror, true)
   t.deepEqual(cfg.ports, {
     http: 80,
@@ -81,7 +78,7 @@ test('full config test', t => {
     agreeTos: true
   })
   t.deepEqual(cfg.dashboard, {port: 8089})
-  t.deepEqual(cfg.webapi, {username: 'robert', password: 'hunter2'})
+  t.deepEqual(cfg.webapi, {username: 'robert', password: 'hunter2', domain: 'foo.bar'})
   t.deepEqual(extractDatCfg(cfg.dats[0]), {
     id: 'dat-1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
     vhostType: 'dat',
@@ -129,7 +126,6 @@ test('can do (mostly) everything disabled', t => {
   })
   t.deepEqual(cfg.configPath, scaffold('everything-disabled.yml'))
   t.deepEqual(cfg.directory, DATADIR)
-  t.deepEqual(cfg.domain, undefined)
   t.deepEqual(cfg.httpMirror, false)
   t.deepEqual(cfg.ports, {http: 80, https: 443})
   t.deepEqual(cfg.letsencrypt, false)
@@ -138,7 +134,7 @@ test('can do (mostly) everything disabled', t => {
   t.deepEqual(cfg.dats, [])
   t.deepEqual(cfg.proxies, [])
   t.deepEqual(cfg.redirects, [])
-  t.deepEqual(cfg.hostnames, [undefined])
+  t.deepEqual(cfg.hostnames, [])
 })
 
 function extractDatCfg (cfg) {

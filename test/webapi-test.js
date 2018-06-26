@@ -6,6 +6,7 @@ test('login fails on wrong username or password', async t => {
   var res
   var server = createServer(`
 webapi:
+  domain: foo.bar
   username: bob
   password: hunter2
 `)
@@ -37,8 +38,8 @@ test('can get account info only if logged in', async t => {
   var res
   var auth
   var server = createServer(`
-domain: test.com
 webapi:
+  domain: test.com
   username: bob
   password: hunter2
 dats:
@@ -117,8 +118,8 @@ test('add & remove dats', async t => {
   var auth
   var syncPromise
   var server = createServer(`
-domain: test.com
 webapi:
+  domain: test.com
   username: bob
   password: hunter2
 dats:
