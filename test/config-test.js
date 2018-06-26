@@ -43,7 +43,7 @@ test('full config test', t => {
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
         name: 'mysite',
-        otherDomains: [
+        domains: [
           'mysite.com',
           'my-site.com'
         ]
@@ -51,7 +51,7 @@ test('full config test', t => {
       {
         url: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
         name: 'othersite',
-        otherDomains: ['othersite.com']
+        domains: ['othersite.com']
       }
     ],
     proxies: [
@@ -84,7 +84,7 @@ test('full config test', t => {
     vhostType: 'dat',
     url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
     name: 'mysite',
-    otherDomains: [
+    domains: [
       'mysite.com',
       'my-site.com'
     ],
@@ -97,7 +97,7 @@ test('full config test', t => {
     vhostType: 'dat',
     url: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
     name: 'othersite',
-    otherDomains: ['othersite.com'],
+    domains: ['othersite.com'],
     hostnames: ['othersite.foo.bar', 'othersite.com'],
     datKey: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
     storageDirectory: path.join(DATADIR, '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f')
@@ -146,7 +146,7 @@ function extractDatCfg (cfg) {
     storageDirectory: cfg.storageDirectory,
     url: cfg.url,
     name: cfg.name,
-    otherDomains: cfg.otherDomains
+    domains: cfg.domains
   }
 }
 

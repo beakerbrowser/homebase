@@ -177,12 +177,12 @@ dats:
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
         name: 'mysite',
-        otherDomains: undefined
+        domains: undefined
       },
       {
         url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
         name: 'othersite',
-        otherDomains: [
+        domains: [
           'othersite.com'
         ]
       }
@@ -231,12 +231,12 @@ dats:
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
         name: 'mysite',
-        otherDomains: undefined
+        domains: undefined
       },
       {
         url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
         name: 'othersite',
-        otherDomains: [
+        domains: [
           'othersite.com',
           'other-site.com'
         ]
@@ -294,7 +294,7 @@ dats:
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
         name: 'mysite',
-        otherDomains: undefined
+        domains: undefined
       }
     ]
   )

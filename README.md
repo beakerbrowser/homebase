@@ -48,6 +48,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
   - [dats](#dats)
     - [dats.*.url](#datsurl)
     - [dats.*.name](#datsname)
+    - [dats.*.domains](#datsdomains)
     - [dats.*.otherDomains](#datsotherdomains)
   - [proxies](#proxies)
     - [proxies.*.from](#proxiesfrom)
@@ -131,8 +132,8 @@ webapi:                # set to false to disable
 # enter your pinned dats here
 dats:
   - url:               # URL of the dat to be pinned
-    name:              # the name of the dat (sets the subdomain)
-    otherDomains:      # (optional) the additional domains
+    domains:           # (optional) the domains of the dat
+    name:              # (optional) the name of the dat (sets the subdomain relative to the webapi)
 
 # enter any proxied routes here
 proxies:
@@ -150,7 +151,7 @@ You'll want to configure the following items:
  - **Domain**. Set the `domain:` field to the top-level domain name of your Homebase instance. New archives will be hosted under its subdomains.
  - **Web API**. Set a username and password on the Web API if you want to publish to your Homebase using Beaker or the Dat CLI.
  - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues. (Set this to `false` if you are running Homebase behind a proxy like Apache or Nginx.)
- - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `otherDomains` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
+ - **Dats**. Add the archives that you want hosted. The `domains` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
 
 Here's an example dat with multiple domains. If the Homebase instance is hosted at `yourdomain.com`, then this dat would be available at `dat://mysite.yourdomain.com`, `dat://mysite.com`, and `dat://my-site.com`. (Don't forget to setup the DNS records!)
 
@@ -158,7 +159,7 @@ Here's an example dat with multiple domains. If the Homebase instance is hosted 
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
     name: mysite
-    otherDomains:
+    domains:
       - mysite.com
       - my-site.com
 ```
@@ -357,7 +358,7 @@ You'll need to configure the DNS entry for the hostname to point to the server. 
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
     name: mysite
-    otherDomains:
+    domains:
       - mysite.com
       - my-site.com
 ```
@@ -373,9 +374,21 @@ dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
 
 #### dats.*.name
 
-The name of the Dat archive. Must be unique on the Homebase instance. The archive will be hosted at `{name}.yourhostname.com`. You'll need to configure the DNS entry for the hostname to point to the server.
+The name of the Dat archive. Sets a subdomain relative to the "web api" domain, similar to the way that [Hashbase](https://hashbase.io) does. Must be unique on the Homebase instance.
+
+#### dats.*.domains
+
+Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
+
+```
+mysite.com
+foo.bar.edu
+best-site-ever.link
+```
 
 #### dats.*.otherDomains
+
+**DEPRECATED**. Use the [domains field](#datsdomains) instead.
 
 Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
 
