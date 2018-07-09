@@ -2,11 +2,20 @@
 
 Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
 
- - **Easy**. Designed for fast setup on linux-based servers and VPSes.
- - **Useful**. Provides the same features as [Hashbase](https://hashbase.io) but easier to self-host.
- - **HTTPS mirroring (optional)**. Any dat site can be accessed over https at the same domain.
- - **Let's Encrypt (optional)**. SSL certificates are fetched automatically.
- - **Metrics dashboard (optional)**. Track the stats on your dats.
+Just setup a `~/.homebase.yml` with your dats:
+
+```yaml
+dats:
+  - url: dat://87ed2e3b160f261a032af03921a3bd09227d0a4cde73466c17114816cae43336
+    domains: beakerbrowser.com
+  - url: dat://40a7f6b6147ae695bcbcff432f684c7bb5291ea339c28c1755896cdeb80bd2f9
+  - url: dat://9900f9aad4d6e79e0beb1c46333852b99829e4dfcdfa9b690eeeab3c367c1b9a
+    domains:
+      - fritter.zone
+      - fritter.com
+```
+
+And then run `homebase`! [Follow this guide for the full setup instructions.](#installation-ubuntu)
 
 ## Table of contents
 
@@ -61,7 +70,7 @@ Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps yo
 
 You will need [nodejs](https://nodejs.org) version 8 or greater. (Consider using [nvm](https://nvm.sh) to get setup.)
 
-You'll need to install some build dependencies:
+You may need to install some build dependencies:
 
 ```
 # install build dependencies
