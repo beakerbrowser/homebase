@@ -15,58 +15,7 @@ dats:
       - fritter.com
 ```
 
-And then run `homebase`!
-
-👉 [Follow this guide for the full setup instructions.](#installation-ubuntu)
-
-## Table of contents
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-
-- [Installation (Ubuntu)](#installation-ubuntu)
-- [Command Line Flags](#command-line-flags)
-- [Env Vars](#env-vars)
-- [Guides](#guides)
-  - [Setup](#setup)
-  - [DNS records](#dns-records)
-  - [Port setup](#port-setup)
-  - [Proxies](#proxies)
-  - [Redirects](#redirects)
-  - [Metrics Dashboard](#metrics-dashboard)
-  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
-- [Configuration file](#configuration-file)
-  - [directory](#directory)
-  - [domain](#domain)
-  - [httpMirror](#httpmirror)
-  - [webapi](#webapi)
-    - [webapi.username](#webapiusername)
-    - [webapi.password](#webapipassword)
-    - [webapi.domain](#webapidomain)
-  - [letsencrypt](#letsencrypt)
-    - [letsencrypt.email](#letsencryptemail)
-    - [letsencrypt.agreeTos](#letsencryptagreetos)
-  - [ports](#ports)
-    - [ports.http](#portshttp)
-    - [ports.https](#portshttps)
-  - [dashboard](#dashboard)
-    - [dashboard.port](#dashboardport)
-  - [dats](#dats)
-    - [dats.*.url](#datsurl)
-    - [dats.*.domains](#datsdomains)
-    - [dats.*.name](#datsname)
-    - [dats.*.otherDomains](#datsotherdomains)
-  - [proxies](#proxies)
-    - [proxies.*.from](#proxiesfrom)
-    - [proxies.*.to](#proxiesto)
-  - [redirects](#redirects)
-    - [redirects.*.from](#redirectsfrom)
-    - [redirects.*.to](#redirectsto)
-- [Changelog](#changelog)
-  - [v2.0.0](#v200)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+And then run `homebase` to keep your dats online.
 
 ## Installation (Ubuntu)
 
@@ -88,7 +37,7 @@ npm install -g @beaker/homebase
 
 ### Configure
 
-To configure your instance, edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved. [Find all of the configuration options here.](#configuration-file)
+Edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved. [Find all of the configuration options here.](#configuration-file)
 
 Here's an example config that's using lets encrypt. The DNS records for `mysite.com` and `my-site.com` would need to be pointed at the Homebase server.
 
@@ -105,13 +54,11 @@ dats:
 
 ### DNS records
 
-You will need to create A records which point to your homebase. For instance, here is the setup on [namecheap.com](https://namecheap.com):
-
-![dns-screenshot.png](dns-screenshot.png)
+You will need to create A records which point to your homebase for every domain you use.
 
 ### Start homebase
 
-Now you're ready to start Homebase! If you want to run Homebase manually, you can invoke the command `homebase`.
+If you want to run Homebase manually, you can invoke the command `homebase`.
 
 ```
 # start homebase
@@ -147,6 +94,49 @@ sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 ```
 
 This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in homebase allowing somebody to control your server.
+
+## Table of contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Guides](#guides)
+  - [Proxies](#proxies)
+  - [Redirects](#redirects)
+  - [Metrics Dashboard](#metrics-dashboard)
+  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
+- [Configuration file](#configuration-file)
+  - [directory](#directory)
+  - [domain](#domain)
+  - [httpMirror](#httpmirror)
+  - [webapi](#webapi)
+    - [webapi.username](#webapiusername)
+    - [webapi.password](#webapipassword)
+    - [webapi.domain](#webapidomain)
+  - [letsencrypt](#letsencrypt)
+    - [letsencrypt.email](#letsencryptemail)
+    - [letsencrypt.agreeTos](#letsencryptagreetos)
+  - [ports](#ports)
+    - [ports.http](#portshttp)
+    - [ports.https](#portshttps)
+  - [dashboard](#dashboard)
+    - [dashboard.port](#dashboardport)
+  - [dats](#dats)
+    - [dats.*.url](#datsurl)
+    - [dats.*.domains](#datsdomains)
+    - [dats.*.name](#datsname)
+    - [dats.*.otherDomains](#datsotherdomains)
+  - [proxies](#proxies)
+    - [proxies.*.from](#proxiesfrom)
+    - [proxies.*.to](#proxiesto)
+  - [redirects](#redirects)
+    - [redirects.*.from](#redirectsfrom)
+    - [redirects.*.to](#redirectsto)
+- [Changelog](#changelog)
+  - [v2.0.0](#v200)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Guides
 
