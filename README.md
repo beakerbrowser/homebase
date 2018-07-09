@@ -15,7 +15,9 @@ dats:
       - fritter.com
 ```
 
-And then run `homebase`! [Follow this guide for the full setup instructions.](#installation-ubuntu)
+And then run `homebase`!
+
+👉 [Follow this guide for the full setup instructions.](#installation-ubuntu)
 
 ## Table of contents
 
