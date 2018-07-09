@@ -6,7 +6,6 @@ test('login fails on wrong username or password', async t => {
   var res
   var server = createServer(`
 webapi:
-  domain: foo.bar
   username: bob
   password: hunter2
 `)
@@ -39,12 +38,11 @@ test('can get account info only if logged in', async t => {
   var auth
   var server = createServer(`
 webapi:
-  domain: test.com
   username: bob
   password: hunter2
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    name: mysite
+    domain: mysite.test.com
 `)
 
   // cant get account info if not logged in
@@ -89,7 +87,6 @@ dats:
   t.deepEqual(res.body.items, [
     {
       url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-      name: 'mysite',
       additionalUrls: [
         'dat://mysite.test.com'
       ]
@@ -119,12 +116,11 @@ test('add & remove dats', async t => {
   var syncPromise
   var server = createServer(`
 webapi:
-  domain: test.com
   username: bob
   password: hunter2
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    name: mysite
+    domain: mysite.test.com
 `)
 
   // login
@@ -144,7 +140,6 @@ dats:
     uri: '/v1/dats/add',
     json: {
       url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
-      name: 'othersite',
       domains: ['othersite.com']
     },
     auth
@@ -163,9 +158,7 @@ dats:
   t.deepEqual(res.statusCode, 200)
   t.deepEqual(res.body, {
     url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
-    name: 'othersite',
     additionalUrls: [
-      'dat://othersite.test.com',
       'dat://othersite.com'
     ]
   })
@@ -176,12 +169,12 @@ dats:
     [
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-        name: 'mysite',
-        domains: undefined
+        domains: [
+          'mysite.test.com'
+        ]
       },
       {
         url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
-        name: 'othersite',
         domains: [
           'othersite.com'
         ]
@@ -216,9 +209,7 @@ dats:
   t.deepEqual(res.statusCode, 200)
   t.deepEqual(res.body, {
     url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
-    name: 'othersite',
     additionalUrls: [
-      'dat://othersite.test.com',
       'dat://othersite.com',
       'dat://other-site.com'
     ]
@@ -230,12 +221,12 @@ dats:
     [
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-        name: 'mysite',
-        domains: undefined
+        domains: [
+          'mysite.test.com'
+        ]
       },
       {
         url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
-        name: 'othersite',
         domains: [
           'othersite.com',
           'other-site.com'
@@ -254,16 +245,13 @@ dats:
   t.deepEqual(res.body.items, [
     {
       url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-      name: 'mysite',
       additionalUrls: [
         'dat://mysite.test.com'
       ]
     },
     {
       url: 'dat://868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f/',
-      name: 'othersite',
       additionalUrls: [
-        'dat://othersite.test.com',
         'dat://othersite.com',
         'dat://other-site.com'
       ]
@@ -293,8 +281,9 @@ dats:
     [
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-        name: 'mysite',
-        domains: undefined
+        domains: [
+          'mysite.test.com'
+        ]
       }
     ]
   )
@@ -309,7 +298,6 @@ dats:
   t.deepEqual(res.body.items, [
     {
       url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-      name: 'mysite',
       additionalUrls: [
         'dat://mysite.test.com'
       ]
