@@ -52,11 +52,7 @@ dats:
       - my-site.com
 ```
 
-### DNS records
-
-You will need to create A records which point to your homebase for every domain you use.
-
-### Start homebase
+### Start Homebase
 
 If you want to run Homebase manually, you can invoke the command `homebase`.
 
@@ -95,17 +91,12 @@ sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 
 This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in homebase allowing somebody to control your server.
 
-## Table of contents
+## Further reading
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Guides](#guides)
-  - [Proxies](#proxies)
-  - [Redirects](#redirects)
-  - [Metrics Dashboard](#metrics-dashboard)
-  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
 - [Configuration file](#configuration-file)
   - [directory](#directory)
   - [domain](#domain)
@@ -133,74 +124,15 @@ This will give nodejs the rights to use ports 80 and 443. This is preferable to 
   - [redirects](#redirects)
     - [redirects.*.from](#redirectsfrom)
     - [redirects.*.to](#redirectsto)
+- [Guides](#guides)
+  - [Proxies](#proxies)
+  - [Redirects](#redirects)
+  - [Metrics Dashboard](#metrics-dashboard)
+  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
 - [Changelog](#changelog)
   - [v2.0.0](#v200)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## Guides
-
-### Proxies
-
-If your Homebase is running on ports 80/443, and you have other Web servers running on your server, you might need Homebase to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
-
-```yaml
-proxies:
-  - from: my-proxy.com
-    to: http://localhost:8080
-```
-
-### Redirects
-
-Sometimes you need to redirect from old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
-
-```yaml
-redirects:
-  - from: my-old-site.com
-    to: https://my-site.com
-```
-
-### Metrics Dashboard
-
-Homebase has built-in support for [Prometheus](https://prometheus.io), which can be visualized by [Grafana](http://grafana.org/).
-
-![./grafana-screenshot.png](./grafana-screenshot.png)
-
-Homebase exposes its metrics at port 8089. Prometheus periodically scrapes the metrics, and stores them in a database. Grafana provides a nice dashboard. It's a little daunting at first, but setup should be relatively painless.
-
-Follow these steps:
-
- 1. [Install Prometheus](https://prometheus.io/download/) on your server.
- 2. [Install Grafana](http://grafana.org/download/) on your server.
- 3. Update the `prometheus.yml` config.
- 4. Start prometheus and grafana.
- 5. Login to grafana.
- 6. Add prometheus as a data source to grafana. (It should be running at localhost:9090.)
- 7. Import [this grafana dashboard](./grafana-dashboard.json).
-
-Your prometheus.yml config should include have the scrape_configs set like this:
-
-```yml
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
-  - job_name: 'homebase'
-    static_configs:
-      - targets: ['localhost:8089']
-```
-
-### Running Homebase behind Apache or Nginx
-
-If you are running Homebase on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to disable Let's Encrypt and to set the http port:
-
-```yaml
-letsencrypt: false
-ports:
-  http: 8080
-```
-
-You will need to add all domains to your Nginx/Apache config.
 
 ## Configuration file
 
@@ -437,6 +369,72 @@ https://mysite.com/
 http://localhost:8080/
 http://127.0.0.1:123/
 ```
+
+## Guides
+
+### Proxies
+
+If your Homebase is running on ports 80/443, and you have other Web servers running on your server, you might need Homebase to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
+
+```yaml
+proxies:
+  - from: my-proxy.com
+    to: http://localhost:8080
+```
+
+### Redirects
+
+Sometimes you need to redirect from old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
+
+```yaml
+redirects:
+  - from: my-old-site.com
+    to: https://my-site.com
+```
+
+### Metrics Dashboard
+
+Homebase has built-in support for [Prometheus](https://prometheus.io), which can be visualized by [Grafana](http://grafana.org/).
+
+![./grafana-screenshot.png](./grafana-screenshot.png)
+
+Homebase exposes its metrics at port 8089. Prometheus periodically scrapes the metrics, and stores them in a database. Grafana provides a nice dashboard. It's a little daunting at first, but setup should be relatively painless.
+
+Follow these steps:
+
+ 1. [Install Prometheus](https://prometheus.io/download/) on your server.
+ 2. [Install Grafana](http://grafana.org/download/) on your server.
+ 3. Update the `prometheus.yml` config.
+ 4. Start prometheus and grafana.
+ 5. Login to grafana.
+ 6. Add prometheus as a data source to grafana. (It should be running at localhost:9090.)
+ 7. Import [this grafana dashboard](./grafana-dashboard.json).
+
+Your prometheus.yml config should include have the scrape_configs set like this:
+
+```yml
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'homebase'
+    static_configs:
+      - targets: ['localhost:8089']
+```
+
+### Running Homebase behind Apache or Nginx
+
+If you are running Homebase on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to disable Let's Encrypt and to set the http port:
+
+```yaml
+letsencrypt: false
+ports:
+  http: 8080
+```
+
+You will need to add all domains to your Nginx/Apache config.
+
+
 
 ## Changelog
 
