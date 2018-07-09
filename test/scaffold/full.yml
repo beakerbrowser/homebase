@@ -13,6 +13,7 @@ dashboard:             # set to false to disable
 webapi:                # set to false to disable
   username: robert     # the username for publishing from Beaker/Dat-CLI
   password: hunter2    # the password for publishing from Beaker/Dat-CLI
+  domain: foo.bar
 
 # enter your pinned dats here
 dats:

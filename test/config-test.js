@@ -38,7 +38,7 @@ test('full config test', t => {
       agreeTos: true
     },
     dashboard: {port: 8089},
-    webapi: {username: 'robert', password: 'hunter2'},
+    webapi: {username: 'robert', password: 'hunter2', domain: 'foo.bar'},
     dats: [
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
@@ -76,7 +76,7 @@ test('full config test', t => {
     agreeTos: true
   })
   t.deepEqual(cfg.dashboard, {port: 8089})
-  t.deepEqual(cfg.webapi, {username: 'robert', password: 'hunter2'})
+  t.deepEqual(cfg.webapi, {username: 'robert', password: 'hunter2', domain: 'foo.bar'})
   t.deepEqual(extractDatCfg(cfg.dats[0]), {
     id: 'dat-1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
     vhostType: 'dat',
@@ -108,7 +108,7 @@ test('full config test', t => {
     {id: 'redirect-foo.redirect.edu', vhostType: 'redirect', hostnames: ['foo.redirect.edu'], from: 'foo.redirect.edu', to: 'http://localhost:8080'},
     {id: 'redirect-best-redirect-ever', vhostType: 'redirect', hostnames: ['best-redirect-ever'], from: 'best-redirect-ever', to: 'http://127.0.0.1:123'}
   ])
-  t.deepEqual(cfg.hostnames, ['mysite.com', 'my-site.com', 'othersite.com', 'myproxy.com', 'foo.proxy.edu', 'best-proxy-ever', 'myredirect.com', 'foo.redirect.edu', 'best-redirect-ever'])
+  t.deepEqual(cfg.hostnames, ['foo.bar', 'mysite.com', 'my-site.com', 'othersite.com', 'myproxy.com', 'foo.proxy.edu', 'best-proxy-ever', 'myredirect.com', 'foo.redirect.edu', 'best-redirect-ever'])
 })
 
 test('can do (mostly) everything disabled', t => {
@@ -149,7 +149,7 @@ test('legacy config test', t => {
     },
     dashboard: {port: 8089},
     domain: 'foo.bar',
-    webapi: {username: 'robert', password: 'hunter2'},
+    webapi: {domain: 'foo.bar', username: 'robert', password: 'hunter2'},
     dats: [
       {
         url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
@@ -191,7 +191,7 @@ test('legacy config test', t => {
     agreeTos: true
   })
   t.deepEqual(cfg.dashboard, {port: 8089})
-  t.deepEqual(cfg.webapi, {username: 'robert', password: 'hunter2'})
+  t.deepEqual(cfg.webapi, {domain: 'foo.bar', username: 'robert', password: 'hunter2'})
   t.deepEqual(extractDatCfg(cfg.dats[0]), {
     id: 'dat-1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
     vhostType: 'dat',
@@ -225,6 +225,7 @@ test('legacy config test', t => {
     {id: 'redirect-best-redirect-ever', vhostType: 'redirect', hostnames: ['best-redirect-ever'], from: 'best-redirect-ever', to: 'http://127.0.0.1:123'}
   ])
   t.deepEqual(cfg.hostnames, [
+    'foo.bar',
     'mysite.com',
     'my-site.com',
     'mysite.foo.bar',
@@ -236,7 +237,7 @@ test('legacy config test', t => {
     'myredirect.com',
     'foo.redirect.edu',
     'best-redirect-ever'
-    ])
+  ])
 })
 
 function extractDatCfg (cfg) {
