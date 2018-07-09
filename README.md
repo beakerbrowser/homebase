@@ -84,38 +84,11 @@ Then install Homebase globally. See [this guide](https://docs.npmjs.com/getting-
 npm install -g @beaker/homebase
 ```
 
-Because Homebase will use privileged ports 80 and 443, you'll need to give nodejs permission to use them. (It's not recommended to run Homebase as super-user.)
+### Configure
 
-```
-# give node perms to use ports 80 and 443
-sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
-```
+To configure your instance, edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved. [Find all of the configuration options here.](#configuration-file)
 
-If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
-
-```
-# install pm2
-npm install -g pm2
-```
-
-Next, [setup your daemon](#setup).
-
-## Command Line Flags
-
-  - `--config <path>` use the config file at the given path instead of the default `~/.homebase.yml`. Overrides the value of the `HOMEBASE_CONFIG` env var.
-
-## Env Vars
-
-  - `HOMEBASE_CONFIG=cfg_file_path` specify an alternative path to the config than `~/.homebase.yml`
-  - `NODE_ENV=debug|staging|production` set to `debug` or `staging` to use the lets-encrypt testing servers.
-
-## Guides
-
-### Setup
-
-To configure your instance, edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved.
-
-Here's an example config of a dat with two domains. The DNS records for `mysite.com` and `my-site.com` would need to be pointed at the Homebase server.
+Here's an example config that's using lets encrypt. The DNS records for `mysite.com` and `my-site.com` would need to be pointed at the Homebase server.
 
 ```yaml
 letsencrypt:
@@ -128,10 +101,26 @@ dats:
       - my-site.com
 ```
 
-Now you're ready to start Homebase! If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
+### DNS records
+
+You will need to create A records which point to your homebase. For instance, here is the setup on [namecheap.com](https://namecheap.com):
+
+![dns-screenshot.png](dns-screenshot.png)
+
+### Start homebase
+
+Now you're ready to start Homebase! If you want to run Homebase manually, you can invoke the command `homebase`.
 
 ```
 # start homebase
+homebase
+```
+
+For keeping the hashbase running as a daemon, we recommend [pm2](https://www.npmjs.com/package/pm2).
+
+```
+# start homebase as a daemon
+npm i -g pm2
 pm2 start homebase
 ```
 
@@ -142,11 +131,7 @@ To stop the daemon, run
 pm2 stop homebase
 ```
 
-### DNS records
-
-You will need to create A records for all of the domains you use. For the subdomains, you can use a wildcard domain.
-
-### Port setup
+### Port setup (EACCES error)
 
 For Homebase to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (dat). Your firewall should be configured to allow traffic on those ports.
 
@@ -160,6 +145,8 @@ sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 ```
 
 This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in homebase allowing somebody to control your server.
+
+## Guides
 
 ### Proxies
 
