@@ -15,7 +15,7 @@
     "dat-node": "^3.5.9",
     "express": "^4.16.3",
     "figures": "^2.0.0",
-    "greenlock-express": "^2.1.6",
+    "greenlock-express": "^2.3.1",
     "http-body-parser": "^1.1.9",
     "http-proxy": "^1.17.0",
     "identify-filetype": "^1.0.0",

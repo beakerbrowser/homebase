@@ -1,4 +1,5 @@
 directory: ~/.homebase # where your data will be stored
+domain: foo.bar        # enter your homebase domain here
 httpMirror: true       # enables http mirrors of the dats
 ports:
   http: 80             # HTTP port for redirects or non-SSL serving
@@ -13,17 +14,17 @@ dashboard:             # set to false to disable
 webapi:                # set to false to disable
   username: robert     # the username for publishing from Beaker/Dat-CLI
   password: hunter2    # the password for publishing from Beaker/Dat-CLI
-  domain: foo.bar
 
 # enter your pinned dats here
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+    name: mysite
     domains:
       - mysite.com
       - my-site.com
   - url: 868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f
-    domain: 
-      - othersite.com
+    name: othersite
+    domain: othersite.com
 
 # enter any proxied routes here
 proxies:

@@ -2,66 +2,26 @@
 
 Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
 
- - **Easy**. Designed for fast setup on linux-based servers and VPSes.
- - **Useful**. Provides the same features as [Hashbase](https://hashbase.io) but easier to self-host.
- - **Accessible**. Integrates with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat) to add/remove Dats using the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/).
- - **Automatic subdomains**.
-   - You setup Homebase at a base domain (eg `yourdomain.com`) and point a wildcard DNS entry to the server.
-   - You give your dats a name when you upload them (eg `mysite`).
-   - Homebase gives the dat a subdomain (eg `dat://mysite.yourdomain.com`).
- - **Custom domains**. Any dat can be given additional custom domain names.
- - **HTTPS mirroring (optional)**. Any dat site can be accessed over https at the same domain.
- - **Let's Encrypt (optional)**. SSL certificates are fetched automatically.
- - **Metrics dashboard (optional)**. Track the stats on your dats.
+Just setup a `~/.homebase.yml` with your dats:
 
-## Table of contents
+```yaml
+dats:
+  - url: dat://87ed2e3b160f261a032af03921a3bd09227d0a4cde73466c17114816cae43336
+    domains: beakerbrowser.com
+  - url: dat://40a7f6b6147ae695bcbcff432f684c7bb5291ea339c28c1755896cdeb80bd2f9
+  - url: dat://9900f9aad4d6e79e0beb1c46333852b99829e4dfcdfa9b690eeeab3c367c1b9a
+    domains:
+      - fritter.zone
+      - fritter.com
+```
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-
-- [Installation (Ubuntu)](#installation-ubuntu)
-- [Command Line Flags](#command-line-flags)
-- [Env Vars](#env-vars)
-- [Guides](#guides)
-  - [Setup](#setup)
-  - [Port setup](#port-setup)
-  - [DNS records](#dns-records)
-  - [Metrics Dashboard](#metrics-dashboard)
-  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
-- [Configuration file](#configuration-file)
-  - [directory](#directory)
-  - [domain](#domain)
-  - [httpMirror](#httpmirror)
-  - [webapi](#webapi)
-    - [webapi.username](#webapiusername)
-    - [webapi.password](#webapipassword)
-  - [letsencrypt](#letsencrypt)
-    - [letsencrypt.email](#letsencryptemail)
-    - [letsencrypt.agreeTos](#letsencryptagreetos)
-  - [ports](#ports)
-    - [ports.http](#portshttp)
-    - [ports.https](#portshttps)
-  - [dashboard](#dashboard)
-    - [dashboard.port](#dashboardport)
-  - [dats](#dats)
-    - [dats.*.url](#datsurl)
-    - [dats.*.name](#datsname)
-    - [dats.*.otherDomains](#datsotherdomains)
-  - [proxies](#proxies)
-    - [proxies.*.from](#proxiesfrom)
-    - [proxies.*.to](#proxiesto)
-  - [redirects](#redirects)
-    - [redirects.*.from](#redirectsfrom)
-    - [redirects.*.to](#redirectsto)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+And then run `homebase` to keep your dats online.
 
 ## Installation (Ubuntu)
 
 You will need [nodejs](https://nodejs.org) version 8 or greater. (Consider using [nvm](https://nvm.sh) to get setup.)
 
-You'll need to install some build dependencies:
+You may need to install some build dependencies:
 
 ```
 # install build dependencies
@@ -75,112 +35,41 @@ Then install Homebase globally. See [this guide](https://docs.npmjs.com/getting-
 npm install -g @beaker/homebase
 ```
 
-Because Homebase will use privileged ports 80 and 443, you'll need to give nodejs permission to use them. (It's not recommended to run Homebase as super-user.)
+### Configure
 
-```
-# give node perms to use ports 80 and 443
-sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
-```
+Edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved. [Find all of the configuration options here.](#configuration-file)
 
-If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
-
-```
-# install pm2
-npm install -g pm2
-```
-
-Next, [setup your daemon](#setup).
-
-## Command Line Flags
-
-  - `--config <path>` use the config file at the given path instead of the default `~/.homebase.yml`. Overrides the value of the `HOMEBASE_CONFIG` env var.
-
-## Env Vars
-
-  - `HOMEBASE_CONFIG=cfg_file_path` specify an alternative path to the config than `~/.homebase.yml`
-  - `NODE_ENV=debug|staging|production` set to `debug` or `staging` to use the lets-encrypt testing servers.
-
-## Guides
-
-### Setup
-
-To configure your instance, edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved.
-
-Here is an example config file:
+Here's an example config that's using lets encrypt. The DNS records for `mysite.com` and `my-site.com` would need to be pointed at the Homebase server.
 
 ```yaml
-directory: ~/.homebase # where your data will be stored
-domain:                # enter your homebase instance's domain here
-httpMirror: true       # enables http mirrors of the dats
-ports:
-  http: 80             # HTTP port for redirects or non-SSL serving
-  https: 443           # HTTPS port for serving mirrored content & DNS data
-letsencrypt:           # set to false to disable lets-encrypt
-  email:               # you must provide your email to LE for admin
-  agreeTos: true       # you must agree to the LE terms (set to true)
-dashboard:             # set to false to disable
-  port: 8089           # port for accessing the metrics dashboard
-
-# enable publishing to Homebase from Beaker & Dat-CLI
-webapi:                # set to false to disable
-  username:            # the username for publishing from Beaker/Dat-CLI
-  password:            # the password for publishing from Beaker/Dat-CLI
-
-# enter your pinned dats here
-dats:
-  - url:               # URL of the dat to be pinned
-    name:              # the name of the dat (sets the subdomain)
-    otherDomains:      # (optional) the additional domains
-
-# enter any proxied routes here
-proxies:
-  - from:              # the domain to accept requests from
-    to:                # the domain (& port) to target
-
-# enter any redirect routes here
-redirects:
-  - from:              # the domain to accept requests from
-    to:                # the domain to redirect to
-```
-
-You'll want to configure the following items:
-
- - **Domain**. Set the `domain:` field to the top-level domain name of your Homebase instance. New archives will be hosted under its subdomains.
- - **Web API**. Set a username and password on the Web API if you want to publish to your Homebase using Beaker or the Dat CLI.
- - **Let's Encrypt**. This is required for accessing your archives with domain names. You'll need to provide your email address so that Let's Encrypt can warn you about expiring certs, or other issues. (Set this to `false` if you are running Homebase behind a proxy like Apache or Nginx.)
- - **Dats**. Add the archives that you want hosted. Each one will be kept online and made available at `dat://{name}.yourdomain.com`. The `otherDomains` field is optional, and can take 1 or more additional domains for hosting the archive at. You can also add & remove archives using Beaker or the Dat CLI via the Web API.
-
-Here's an example dat with multiple domains. If the Homebase instance is hosted at `yourdomain.com`, then this dat would be available at `dat://mysite.yourdomain.com`, `dat://mysite.com`, and `dat://my-site.com`. (Don't forget to setup the DNS records!)
-
-```yaml
+letsencrypt:
+  email: # set this to your email address
+  agreeTos: true
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    name: mysite
-    otherDomains:
+    domains:
       - mysite.com
       - my-site.com
 ```
 
-If your Homebase is running on ports 80/443, and you have other Web servers running on your server, you might need Homebase to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
+### DNS records
 
-```yaml
-proxies:
-  - from: my-proxy.com
-    to: http://localhost:8080
-```
+You will need to create A records which point to your homebase for every domain you use.
 
-Sometimes you need to redirect from old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
+### Start homebase
 
-```yaml
-redirects:
-  - from: my-old-site.com
-    to: https://my-site.com
-```
-
-Now you're ready to start Homebase! If you want to run Homebase manually, you can invoke the command `homebase`. However, for keeping the daemon running, we recommend [pm2](https://www.npmjs.com/package/pm2).
+If you want to run Homebase manually, you can invoke the command `homebase`.
 
 ```
 # start homebase
+homebase
+```
+
+For keeping the hashbase running as a daemon, we recommend [pm2](https://www.npmjs.com/package/pm2).
+
+```
+# start homebase as a daemon
+npm i -g pm2
 pm2 start homebase
 ```
 
@@ -191,7 +80,7 @@ To stop the daemon, run
 pm2 stop homebase
 ```
 
-### Port setup
+### Port setup (EACCES error)
 
 For Homebase to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (dat). Your firewall should be configured to allow traffic on those ports.
 
@@ -206,9 +95,70 @@ sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
 
 This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in homebase allowing somebody to control your server.
 
-### DNS records
+## Table of contents
 
-You will need to create A records for all of the domains you use. For the subdomains, you can use a wildcard domain.
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Guides](#guides)
+  - [Proxies](#proxies)
+  - [Redirects](#redirects)
+  - [Metrics Dashboard](#metrics-dashboard)
+  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
+- [Configuration file](#configuration-file)
+  - [directory](#directory)
+  - [domain](#domain)
+  - [httpMirror](#httpmirror)
+  - [webapi](#webapi)
+    - [webapi.username](#webapiusername)
+    - [webapi.password](#webapipassword)
+    - [webapi.domain](#webapidomain)
+  - [letsencrypt](#letsencrypt)
+    - [letsencrypt.email](#letsencryptemail)
+    - [letsencrypt.agreeTos](#letsencryptagreetos)
+  - [ports](#ports)
+    - [ports.http](#portshttp)
+    - [ports.https](#portshttps)
+  - [dashboard](#dashboard)
+    - [dashboard.port](#dashboardport)
+  - [dats](#dats)
+    - [dats.*.url](#datsurl)
+    - [dats.*.domains](#datsdomains)
+    - [dats.*.name](#datsname)
+    - [dats.*.otherDomains](#datsotherdomains)
+  - [proxies](#proxies)
+    - [proxies.*.from](#proxiesfrom)
+    - [proxies.*.to](#proxiesto)
+  - [redirects](#redirects)
+    - [redirects.*.from](#redirectsfrom)
+    - [redirects.*.to](#redirectsto)
+- [Changelog](#changelog)
+  - [v2.0.0](#v200)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Guides
+
+### Proxies
+
+If your Homebase is running on ports 80/443, and you have other Web servers running on your server, you might need Homebase to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
+
+```yaml
+proxies:
+  - from: my-proxy.com
+    to: http://localhost:8080
+```
+
+### Redirects
+
+Sometimes you need to redirect from old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
+
+```yaml
+redirects:
+  - from: my-old-site.com
+    to: https://my-site.com
+```
 
 ### Metrics Dashboard
 
@@ -254,13 +204,47 @@ You will need to add all domains to your Nginx/Apache config.
 
 ## Configuration file
 
-The fields in detail.
+```yaml
+directory: ~/.homebase # where your data will be stored
+httpMirror: true       # enables http mirrors of the dats
+ports:
+  http: 80             # HTTP port for redirects or non-SSL serving
+  https: 443           # HTTPS port for serving mirrored content & DNS data
+letsencrypt:           # set to false to disable lets-encrypt
+  email:               # you must provide your email to LE for admin
+  agreeTos: true       # you must agree to the LE terms (set to true)
+dashboard:             # set to false to disable
+  port: 8089           # port for accessing the metrics dashboard
+
+# enable publishing to Homebase from Beaker & Dat-CLI
+webapi:                # set to false to disable
+  domain:              # enter your web api's domain here (optional unless lets-encrypt TLS is wanted on the web api)
+  username:            # the username for publishing from Beaker/Dat-CLI
+  password:            # the password for publishing from Beaker/Dat-CLI
+
+# enter your pinned dats here
+dats:
+  - url:               # URL of the dat to be pinned
+    domains:           # (optional) the domains of the dat
+
+# enter any proxied routes here
+proxies:
+  - from:              # the domain to accept requests from
+    to:                # the domain (& port) to target
+
+# enter any redirect routes here
+redirects:
+  - from:              # the domain to accept requests from
+    to:                # the domain to redirect to
+```
 
 ### directory
 
 The directory where homebase will store your Dat archive's files. Defaults to ~/.homebase.
 
 ### domain
+
+**DEPRECATED**. See the [v2.0.0 migration guide](#v200).
 
 The DNS domain of your homebase instance.
 
@@ -275,6 +259,7 @@ Set to `false` to disable the [Pinning Service API](https://www.datprotocol.com/
 ```yaml
 # enable publishing to Homebase from Beaker & Dat-CLI
 webapi:                # set to false to disable
+  domain:              # the domain of the web api (optional)
   username:            # the username for publishing from Beaker/Dat-CLI
   password:            # the password for publishing from Beaker/Dat-CLI
 ```
@@ -286,6 +271,10 @@ Sets the username for your pinning service API.
 #### webapi.password
 
 Sets the password for your pinning service API.
+
+#### webapi.domain
+
+The DNS domain of your homebase Web API. Optional, but required if you want lets-encrypt to provide your Web API with an SSL certificate.
 
 ### letsencrypt
 
@@ -347,8 +336,7 @@ You'll need to configure the DNS entry for the hostname to point to the server. 
 ```yaml
 dats:
   - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    name: mysite
-    otherDomains:
+    domains:
       - mysite.com
       - my-site.com
 ```
@@ -362,11 +350,25 @@ The Dat URL of the site to host. Should be a 'raw' dat url (no DNS hostname). Ex
 dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
 ```
 
+#### dats.*.domains
+
+Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
+
+```
+mysite.com
+foo.bar.edu
+best-site-ever.link
+```
+
 #### dats.*.name
 
-The name of the Dat archive. Must be unique on the Homebase instance. The archive will be hosted at `{name}.yourhostname.com`. You'll need to configure the DNS entry for the hostname to point to the server.
+**DEPRECATED**. See the [v2.0.0 migration guide](#v200).
+
+The name of the Dat archive. Sets a subdomain relative to the "web api" domain, similar to the way that [Hashbase](https://hashbase.io) does. Must be unique on the Homebase instance.
 
 #### dats.*.otherDomains
+
+**DEPRECATED**. Use the [domains field](#datsdomains) instead.
 
 Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
 
@@ -435,3 +437,54 @@ https://mysite.com/
 http://localhost:8080/
 http://127.0.0.1:123/
 ```
+
+## Changelog
+
+### v2.0.0
+
+ - Removed the `dats.*.name` field. You can now set the domains for your dats directly with the `dat.*.domains` field.
+ - Moved the `domain` config from the top of the yaml file to the `webapi` field. This makes it clearer what the domain applies to. (It is also optional unless you want letsencrypt.)
+
+The original release of Homebase tried to mimic [Hashbase](https://github.com/beakerbrowser/hashbase) as closely as possible. As a result, it had a concept of a root domain and each dat was given a `name` which became a subdomain under that root domain. This confused most users and was generally regarded as "the worst." To simplify the config process, we have removed the concept of the root domain and `name` attribute. Now, you just set the domains directly on each dat. (We're going to update Hashbase to fit this model as well.)
+
+If your previous config looked like:
+
+```yaml
+domain: foo.com
+dats:
+  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+    name: mysite
+    domains:
+      - mysite.com
+      - my-site.com
+```
+
+It should now look like this:
+
+```yaml
+dats:
+  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+    domains:
+      - mysite.foo.com
+      - mysite.com
+      - my-site.com
+```
+
+If you want to use the web api at a domain, you should move the `domain` to the `webapi` field. So, if your config looked like:
+
+```yaml
+domain: foo.com
+webapi:
+  username: admin
+  password: hunter2
+```
+
+It should be updated to look like this:
+
+```yaml
+webapi:
+  domain: foo.com
+  username: admin
+  password: hunter2
+```
+ 

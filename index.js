@@ -17,3 +17,6 @@ const argv = require('yargs')
 // read config and start the server
 var config = new HomebaseConfig(argv.config)
 server.start(config)
+
+process.on('uncaughtException', console.error)
+process.on('unhandledRejection', console.error)
