@@ -1,158 +1,192 @@
-# Homebase
+# homebase
 
-Easy-to-administer "pinning" server for [Dat](https://datprotocol.com). Keeps your dats online while your personal computer is off.
+`homebase` is a self-deployable tool for managing websites published with the [Dat protocol](https://datprotocol.com).
 
-Just setup a `~/.homebase.yml` with your dats:
+`homebase` is for you if:
 
-```yaml
-dats:
-  - url: dat://87ed2e3b160f261a032af03921a3bd09227d0a4cde73466c17114816cae43336
-    domains: beakerbrowser.com
-  - url: dat://40a7f6b6147ae695bcbcff432f684c7bb5291ea339c28c1755896cdeb80bd2f9
-  - url: dat://9900f9aad4d6e79e0beb1c46333852b99829e4dfcdfa9b690eeeab3c367c1b9a
-    domains:
-      - fritter.zone
-      - fritter.com
-```
+- You're comfortable with some server administration (or want to learn!)
+- You want to keep your dat:// website/s online
+- You want to publish your dat:// website/s to a domain name
 
-And then run `homebase` to keep your dats online.
+Don't want to run `homebase` yourself? You can still make sure your dat:// website stays online by using a service like [Hashbase](https://hashbase.io). Or maybe you can convince a generous friend to run an instance of `homebase` using its built-in [Pinning Service APIs](#example-seed-multiple-websites-enable-web-api).
 
-## Installation (Ubuntu)
+## Table of contents
 
-You will need [nodejs](https://nodejs.org) version 8 or greater. (Consider using [nvm](https://nvm.sh) to get setup.)
+- [Features](#features)
+- [Install](#install)
+- [Running homebase](#running-homebase)
+- [Examples](#examples)
+- [Configuration](#configuration)
+- [Advanced examples](#advanced-examples)
+- [Troubleshooting](#troubleshooting)
+- [Support](#support)
+- [Changelog](#changelog)
 
-You may need to install some build dependencies:
+## Features
 
-```
-# install build dependencies
-sudo apt-get install libtool m4 automake libcap2-bin build-essential
-```
+- Keeps dat:// websites online
+- Publishes dat:// websites to DNS shortnames
+- Mirrors dat:// websites to https://
+- Provisions and manages HTTPS with [Let's Encrypt](https://letsencrypt.org)
+- Provides optional [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/) endpoints
 
-Then install Homebase globally. See [this guide](https://docs.npmjs.com/getting-started/fixing-npm-permissions) if you run into permissions problems.
+## Install
 
-```
-# install homebase
+If you already have [Node.js](https://nodejs.org) (8.0+) and [npm](https://npmjs.com) installed on your server, get started by installing Homebase with npm or [npx](https://github.com/zkat/npx).
+
+```bash
 npm install -g @beaker/homebase
 ```
 
-### Configure
+Otherwise, install Node.js and npm first:
 
-Edit `~/.homebase.yml`. You can edit the configuration file even if the homebase daemon is running, and homebase will automatically restart after your changes are saved. [Find all of the configuration options here.](#configuration-file)
+- [Install Node.js](https://nodejs.org/en/download/)
+- [nvm](https://github.com/creationix/nvm) for managing Node versions
+- [Fixing npm permissions problems](https://docs.npmjs.com/getting-started/fixing-npm-permissions)
 
-Here's an example config that's using lets encrypt. The DNS records for `mysite.com` and `my-site.com` would need to be pointed at the Homebase server.
+Having trouble installing? See [Troubleshooting](#troubleshooting).
 
-```yaml
-letsencrypt:
-  email: # set this to your email address
-  agreeTos: true
-dats:
-  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    domains:
-      - mysite.com
-      - my-site.com
-```
+## Running homebase
 
-### Start Homebase
+To run `homebase` manually, simply invoke the `homebase` command:
 
-If you want to run Homebase manually, you can invoke the command `homebase`.
-
-```
-# start homebase
+```bash
 homebase
 ```
 
-For keeping the hashbase running as a daemon, we recommend [pm2](https://www.npmjs.com/package/pm2).
+To keep `homebase` running, you'll need to daemonize it. We like using [pm2](https://www.npmjs.com/package/pm2).
 
-```
-# start homebase as a daemon
+```bash
+# install pm2
 npm i -g pm2
+
+# start homebase with pm2
 pm2 start homebase
 ```
 
-To stop the daemon, run
+To stop the daemon, run:
 
 ```
 # stop homebase
 pm2 stop homebase
 ```
 
-### Port setup (EACCES error)
+### Command line flags
 
-For Homebase to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (dat). Your firewall should be configured to allow traffic on those ports.
+- `--config <path>`
+  - Use the config file at the given path instead of the default `~/.homebase.yml`. Overrides the value of the HOMEBASE_CONFIG env var.
 
-If you get an EACCES error on startup, you either have a process using the port already, or you lack permission to use the port. Try `lsof -i tcp:80` or `lsof -i tcp:443` to see if there are any processes bound to the ports you need.
+### Environment variables
 
-If the ports are not in use, then it's probably a permissions problem. We recommend using the following command to solve that:
+- `HOMEBASE_CONFIG=cfg_file_path`
+  - Specify an alternative path to the config than `~/.homebase.yml`
+- `NODE_ENV=debug|staging|production`
+  - Set to debug or staging to use the Let's Encrypt testing servers.
+
+## Examples
+
+`homebase` uses a [configuration file](#configuration-file) (`~/.homebase.yml` by default) for managing its behavior. These examples show various configurations.
+
+[See all configuration options](#configuration)
+
+### Example: set up a website with a domain name and HTTP mirroring
+
+This configuration file will "seed" or "pin" the files at `dat://123...456`, publish those files to `dat://alice.com`, and mirror them to `https://alice.com`.
+
+This example uses a domain name, so in order for the domain name to resolve correctly, you'll need to update your DNS configuration first. In this case, you could set an `A` record that points to the `homebase` server's IP address.
+
+```yaml
+dats:
+  - url: dat://123...456
+    domains:
+      - alice.com
+httpMirror: true
+letsencrypt:
+  email: alice@mail.com
+  agreeTos: true
 
 ```
-# give node perms to use ports 80 and 443
-sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
+
+### Example: seed multiple websites, with no domain names
+
+This configuration simply "seeds" or "pins" the files at `dat://123...456` and `dat:///456...789`. No domain name is required for this configuration.
+
+```yaml
+dats:
+  - url: dat://123...456
+  - url: dat://456...789
 ```
 
-This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in homebase allowing somebody to control your server.
+### Example: seed multiple websites, enable Web API
 
-## Further reading
+In addition to being used to manage a website, `homebase` can be used with more specific configurations, like providing a mini-pinning service for a group of friends.
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+This example enables the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/), which makes it possible for you (and maybe a few friends!) to publish to your `homebase` instance with [Beaker](https://beakerbrowser.com), the [Dat CLI](https://npm.im/dat), or any client that supports the Pinning Service API.
 
+If you choose to use a domain name for your API endpoint, be sure to configure your DNS to point to your `homebase` server.
+
+[See full `webapi` reference](#webapi)
+
+```yaml
+# enable publishing to `homebase` from Beaker and the Dat CLI
+webapi:                # set to false to disable
+  domain:              # the domain name for the web API (optional)
+  username:            # the username for publishing from Beaker or the Dat CLI
+  password:            # the password for publishing from Beaker or the Dat CLI
+```
+
+## Configuration
 
 - [Configuration file](#configuration-file)
-  - [directory](#directory)
-  - [domain](#domain)
-  - [httpMirror](#httpmirror)
-  - [webapi](#webapi)
-    - [webapi.username](#webapiusername)
-    - [webapi.password](#webapipassword)
-    - [webapi.domain](#webapidomain)
-  - [letsencrypt](#letsencrypt)
-    - [letsencrypt.email](#letsencryptemail)
-    - [letsencrypt.agreeTos](#letsencryptagreetos)
-  - [ports](#ports)
-    - [ports.http](#portshttp)
-    - [ports.https](#portshttps)
-  - [dashboard](#dashboard)
-    - [dashboard.port](#dashboardport)
-  - [dats](#dats)
-    - [dats.*.url](#datsurl)
-    - [dats.*.domains](#datsdomains)
-    - [dats.*.name](#datsname)
-    - [dats.*.otherDomains](#datsotherdomains)
-  - [proxies](#proxies)
-    - [proxies.*.from](#proxiesfrom)
-    - [proxies.*.to](#proxiesto)
-  - [redirects](#redirects)
-    - [redirects.*.from](#redirectsfrom)
-    - [redirects.*.to](#redirectsto)
-- [Guides](#guides)
-  - [Proxies](#proxies)
-  - [Redirects](#redirects)
-  - [Metrics Dashboard](#metrics-dashboard)
-  - [Running Homebase behind Apache or Nginx](#running-homebase-behind-apache-or-nginx)
-- [Changelog](#changelog)
-  - [v2.0.0](#v200)
+- [dashboard](#dashboard)
+  - [dashboard.port](#dashboardport)
+- [dats](#dats)
+  - [dats.*.url](#datsurl)
+  - [dats.*.domains](#datsdomains)
+  - [dats.*.name](#datsname)
+  - [dats.*.otherDomains](#datsotherdomains)
+- [directory](#directory)
+- [domain](#domain)
+- [httpMirror](#httpmirror)
+- [letsencrypt](#letsencrypt)
+  - [letsencrypt.email](#letsencryptemail)
+  - [letsencrypt.agreeTos](#letsencryptagreetos)
+- [ports](#ports)
+  - [ports.http](#portshttp)
+  - [ports.https](#portshttps)
+- [proxies](#proxies)
+  - [proxies.*.from](#proxiesfrom)
+  - [proxies.*.to](#proxiesto)
+- [redirects](#redirects)
+  - [redirects.*.from](#redirectsfrom)
+  - [redirects.*.to](#redirectsto)
+- [webapi](#webapi)
+  - [webapi.username](#webapiusername)
+  - [webapi.password](#webapipassword)
+  - [webapi.domain](#webapidomain)
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+### Configuration file
 
-## Configuration file
+`homebase` uses `~/.homebase.yml` as its default configuration file. You can specify an alternative config file using a [command line flag](#command-line-flags) or an [environment variable](#environment-variables).
+
 
 ```yaml
 directory: ~/.homebase # where your data will be stored
-httpMirror: true       # enables http mirrors of the dats
+httpMirror: true       # enables HTTP mirroring
 ports:
-  http: 80             # HTTP port for redirects or non-SSL serving
-  https: 443           # HTTPS port for serving mirrored content & DNS data
-letsencrypt:           # set to false to disable lets-encrypt
+  http: 80             # HTTP port for redirects or non-TLS serving
+  https: 443           # HTTPS port for serving mirrored content and DNS data
+letsencrypt:           # set to false to disable Let's Encrypt
   email:               # you must provide your email to LE for admin
   agreeTos: true       # you must agree to the LE terms (set to true)
 dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
 
-# enable publishing to Homebase from Beaker & Dat-CLI
+# enable publishing to homebase from Beaker and the Dat CLI
 webapi:                # set to false to disable
-  domain:              # enter your web api's domain here (optional unless lets-encrypt TLS is wanted on the web api)
-  username:            # the username for publishing from Beaker/Dat-CLI
-  password:            # the password for publishing from Beaker/Dat-CLI
+  domain:              # enter your web API's domain here (optional, unless Let's Encrypt TLS is wanted on the web API)
+  username:            # the username for publishing from Beaker or the Dat CLI
+  password:            # the password for publishing from Beaker or the Dat CLI
 
 # enter your pinned dats here
 dats:
@@ -170,85 +204,11 @@ redirects:
     to:                # the domain to redirect to
 ```
 
-### directory
-
-The directory where homebase will store your Dat archive's files. Defaults to ~/.homebase.
-
-### domain
-
-**DEPRECATED**. See the [v2.0.0 migration guide](#v200).
-
-The DNS domain of your homebase instance.
-
-### httpMirror
-
-Set to `true` to provide https mirroring of your Dat archives. Defaults to true.
-
-### webapi
-
-Set to `false` to disable the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/) which enables publishing to Homebase with [Beaker](https://beakerbrowser.com) and the [Dat CLI](https://npm.im/dat). Defaults to `false`.
-
-```yaml
-# enable publishing to Homebase from Beaker & Dat-CLI
-webapi:                # set to false to disable
-  domain:              # the domain of the web api (optional)
-  username:            # the username for publishing from Beaker/Dat-CLI
-  password:            # the password for publishing from Beaker/Dat-CLI
-```
-
-#### webapi.username
-
-Sets the username for your pinning service API.
-
-#### webapi.password
-
-Sets the password for your pinning service API.
-
-#### webapi.domain
-
-The DNS domain of your homebase Web API. Optional, but required if you want lets-encrypt to provide your Web API with an SSL certificate.
-
-### letsencrypt
-
-Set to `false` to disable Lets Encrypt's automatic SSL certificate provisioning. Defaults to `false`.
-
-```yaml
-letsencrypt:           # set to false to disable lets-encrypt
-  email:               # you must provide your email to LE for admin
-  agreeTos: true       # you must agree to the LE terms (set to true)
-```
-
-#### letsencrypt.email
-
-The email to send Lets Encrypt notices to.
-
-#### letsencrypt.agreeTos
-
-Do you agree to the [terms of service of Lets Encrypt](https://letsencrypt.org/repository/)? (Required, must be true)
-
-### ports
-
-Contains the ports for http and https.
-
-```yaml
-ports:
-  http: 80             # HTTP port for redirects or non-SSL serving
-  https: 443           # HTTPS port for serving mirrored content & DNS data
-```
-
-#### ports.http
-
-The port to serve the HTTP sites. Defaults to 80.
-
-HTTP automatically redirects to HTTPS.
-
-#### ports.https
-
-The port to serve the HTTPS sites. Defaults to 443.
-
 ### dashboard
 
-Set to `false` to disable the [prometheus metrics dashboard](#metrics-dashboard). Defaults to `false`.
+Default `false`
+
+Set to `true` to enable the [Prometheus metrics dashboard](#example-using-a-metrics-dashboard).
 
 ```yaml
 dashboard:             # set to false to disable
@@ -257,13 +217,13 @@ dashboard:             # set to false to disable
 
 #### dashboard.port
 
-The port to serve the [prometheus metrics dashboard](#metrics-dashboard). Defaults to 8089.
+Default: `8089`
+
+The port to serve the [Prometheus metrics dashboard](#example-using-a-metrics-dashboard).
 
 ### dats
 
-A listing of the Dat archives to host.
-
-You'll need to configure the DNS entry for the hostname to point to the server. For instance, if using `site.yourhostname.com`, you'll need a DNS entry pointing `site.yourhostname.com` to the server.
+A listing of the Dat archives to seed.
 
 ```yaml
 dats:
@@ -275,16 +235,28 @@ dats:
 
 #### dats.*.url
 
-The Dat URL of the site to host. Should be a 'raw' dat url (no DNS hostname). Example values:
+The Dat URL of the site to host. Should be a 'raw' dat url (no DNS hostname).
+
+Example values:
 
 ```
-868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f
+# raw key
+1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03
+
+# URL with trailing slash
 dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+
+# URL with no trailing slash
+dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03
 ```
 
 #### dats.*.domains
 
-Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
+Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name.
+
+To use `dats.*.domains`, you'll first need to configure the DNS entry for your domain name to point to your server. For instance, to point `alice.com` with `homebase`, you'll need to update your DNS configuration to point `alice.com` to your homebase server's IP address.
+
+Example values:
 
 ```
 mysite.com
@@ -294,13 +266,13 @@ best-site-ever.link
 
 #### dats.*.name
 
-**DEPRECATED**. See the [v2.0.0 migration guide](#v200).
+**DEPRECATED**. See the [v2.0.0 migration guide](#migrating-to-v2-0-0).
 
-The name of the Dat archive. Sets a subdomain relative to the "web api" domain, similar to the way that [Hashbase](https://hashbase.io) does. Must be unique on the Homebase instance.
+The name of the Dat archive. Sets a subdomain relative to the Web API domain, similar to the way that [Hashbase](https://hashbase.io) does. Must be unique on the `homebase` instance.
 
 #### dats.*.otherDomains
 
-**DEPRECATED**. Use the [domains field](#datsdomains) instead.
+**DEPRECATED**. Use the [domains field](#dats-domains) instead.
 
 Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
 
@@ -309,6 +281,68 @@ mysite.com
 foo.bar.edu
 best-site-ever.link
 ```
+
+### directory
+
+Default:  `~/.homebase`
+
+The directory where `homebase` will store your Dat archive's files.
+
+### domain
+
+**DEPRECATED**. See the [v2.0.0 migration guide](#migrating-to-v2-0-0).
+
+The DNS domain of your homebase instance.
+
+### httpMirror
+
+Default: `false`
+
+Set to `true` to provide https mirroring of your Dat archives.
+
+### letsencrypt
+
+Default: `false`
+
+Set to `true` to enable Lets Encrypt's automatic TLS certificate provisioning.
+
+```yaml
+letsencrypt:           # set to false to disable Let's Encrypt
+  email:               # you must provide your email to LE for admin
+  agreeTos: true       # you must agree to the LE terms (set to true)
+```
+
+#### letsencrypt.email
+
+The email to send Let's Encrypt notices to.
+
+#### letsencrypt.agreeTos
+
+Do you agree to the [terms of service of Lets Encrypt](https://letsencrypt.org/repository/)? Required, must be true.
+
+### ports
+
+The ports for HTTP and HTTPS.
+
+```yaml
+ports:
+  http: 80             # HTTP port for redirects or non-TLS serving
+  https: 443           # HTTPS port for serving mirrored content and DNS data
+```
+
+#### ports.http
+
+Default: `80`
+
+The port for serving HTTP sites.
+
+HTTP automatically redirects to HTTPS.
+
+#### ports.https
+
+Default: `443`
+
+The port for serving HTTPS sites.
 
 ### proxies
 
@@ -322,7 +356,9 @@ proxies:
 
 #### proxies.*.from
 
-The domain to proxy from. Should be a domain name. Example values:
+The domain to proxy from. Should be a domain name.
+
+Example values:
 
 ```
 mysite.com
@@ -332,7 +368,9 @@ best-site-ever.link
 
 #### proxies.*.to
 
-The protocol, domain, and port to proxy to. Should be an origin (scheme / hostname / port). Example values:
+The protocol, domain, and port to proxy to. Should be an [origin](https://en.wikipedia.org/wiki/Same-origin_policy#Origin_determination_rules).
+
+Example values:
 
 ```
 https://mysite.com/
@@ -352,7 +390,9 @@ redirects:
 
 #### redirects.*.from
 
-The domain to redirect from. Should be a domain name. Example values:
+The domain to redirect from. Should be a domain name.
+
+Example values:
 
 ```
 mysite.com
@@ -362,7 +402,9 @@ best-site-ever.link
 
 #### redirects.*.to
 
-The base URL to redirect to. Should be an origin (scheme / hostname / port). Example values:
+The base URL to redirect to. Should be an [origin](https://en.wikipedia.org/wiki/Same-origin_policy#Origin_determination_rules).
+
+Example values:
 
 ```
 https://mysite.com/
@@ -370,11 +412,39 @@ http://localhost:8080/
 http://127.0.0.1:123/
 ```
 
-## Guides
+### webapi
 
-### Proxies
+Default: `false`
 
-If your Homebase is running on ports 80/443, and you have other Web servers running on your server, you might need Homebase to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
+Set to `true` to enable the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/), which enables publishing to Homebase with [Beaker](https://beakerbrowser.com), the [Dat CLI](https://npm.im/dat), or any other client that supports the Pinning Service API.
+
+```yaml
+# enable publishing to `homebase` from Beaker and the Dat CLI
+webapi:                # set to false to disable
+  domain:              # the domain of the web api (optional)
+  username:            # the username for publishing from Beaker or the Dat CLI
+  password:            # the password for publishing from Beaker or the Dat CLI
+```
+
+#### webapi.username
+
+The username for your pinning service API.
+
+#### webapi.password
+
+The password for your pinning service API.
+
+#### webapi.domain
+
+The DNS domain of your homebase Web API. Optional, but required if you want Let's Encrypt to provide your Web API with a TLS certificate.
+
+## Advanced examples
+
+### Example: proxies
+
+If your `homebase` instance is running on ports 80/443, and you have other Web servers running on your server, you might need `homebase` to proxy to those other servers. You can do that with the `proxies` config. Here's an example proxy rule:
+
+[See full `proxies` reference](#proxies)
 
 ```yaml
 proxies:
@@ -382,9 +452,11 @@ proxies:
     to: http://localhost:8080
 ```
 
-### Redirects
+### Example: redirecting requests
 
-Sometimes you need to redirect from old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
+Sometimes you need to redirect old domains to new ones. You can do that with the `redirects` rule. Here's an example redirect rule:
+
+[See full `redirects` reference](#redirects)
 
 ```yaml
 redirects:
@@ -392,27 +464,27 @@ redirects:
     to: https://my-site.com
 ```
 
-### Metrics Dashboard
+### Example: using a metrics dashboard
 
-Homebase has built-in support for [Prometheus](https://prometheus.io), which can be visualized by [Grafana](http://grafana.org/).
+`homebase` has built-in support for [Prometheus](https://prometheus.io), which can be visualized with [Grafana](http://grafana.org/).
 
 ![./grafana-screenshot.png](./grafana-screenshot.png)
 
-Homebase exposes its metrics at port 8089. Prometheus periodically scrapes the metrics, and stores them in a database. Grafana provides a nice dashboard. It's a little daunting at first, but setup should be relatively painless.
+Homebase exposes its metrics at port 8089. Prometheus periodically scrapes the metrics and stores them in a database. Grafana uses those metrics and provides a provides a nice dashboard visualization. It's a little daunting at first, but setup should be relatively painless.
 
-Follow these steps:
+Steps:
 
- 1. [Install Prometheus](https://prometheus.io/download/) on your server.
- 2. [Install Grafana](http://grafana.org/download/) on your server.
- 3. Update the `prometheus.yml` config.
- 4. Start prometheus and grafana.
- 5. Login to grafana.
- 6. Add prometheus as a data source to grafana. (It should be running at localhost:9090.)
- 7. Import [this grafana dashboard](./grafana-dashboard.json).
+ 1. [Install Prometheus](https://prometheus.io/download/) on your server
+ 2. [Install Grafana](http://grafana.org/download/) on your server
+ 3. Update the `prometheus.yml` config
+ 4. Start Prometheus and Grafana
+ 5. Login to Grafana
+ 6. Add Prometheus as a data source to Grafana (it should be running at `localhost:9090`
+ 7. Import [this Grafana dashboard](./grafana-dashboard.json)
 
-Your prometheus.yml config should include have the scrape_configs set like this:
+Your `prometheus.yml` config should include have the `scrape_configs` option set like this:
 
-```yml
+```yaml
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
@@ -422,9 +494,9 @@ scrape_configs:
       - targets: ['localhost:8089']
 ```
 
-### Running Homebase behind Apache or Nginx
+### Example: running homebase behind Apache or Nginx
 
-If you are running Homebase on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to disable Let's Encrypt and to set the http port:
+If you're running `homebase` on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to disable Let's Encrypt and to set the HTTP port:
 
 ```yaml
 letsencrypt: false
@@ -434,18 +506,51 @@ ports:
 
 You will need to add all domains to your Nginx/Apache config.
 
+## Troubleshooting
 
+### Installing build dependencies
+
+When installing `homebase`, you may need to install additional build dependencies:
+
+```
+sudo apt-get install libtool m4 automake libcap2-bin build-essential
+```
+
+### Port setup (EACCES error)
+
+For `homebase` to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (dat). Your firewall should be configured to allow traffic on those ports.
+
+If you get an EACCES error on startup, you either have a process using the port already, or you lack permission to use the port. Try `lsof -i tcp:80` or `lsof -i tcp:443` to see if there are any processes bound to the ports you need.
+
+If the ports are not in use, then it's probably a permissions problem. We recommend using the following command to solve that:
+
+```
+# give node perms to use ports 80 and 443
+sudo setcap cap_net_bind_service=+ep `readlink -f \`which node\``
+```
+
+This will give nodejs the rights to use ports 80 and 443. This is preferable to running homebase as root, because that carries some risk of a bug in `homebase` allowing somebody to control your server.
+
+## Support
+
+`homebase` is built by the [Beaker Browser team](https://beakerbrowser.com/about.html). Become a backer and help support the development of an open, friendly, and fun Web. You can help us continue our work on Beaker, [hashbase.io](https://hashbase.io), `homebase`, and more. Thank you!
+
+[Become a backer](https://opencollective.com/beaker)
+
+<a href="https://opencollective.com/beaker/backer/0/website" target="_blank"><img src="https://opencollective.com/beaker/backer/0/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/1/website" target="_blank"><img src="https://opencollective.com/beaker/backer/1/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/2/website" target="_blank"><img src="https://opencollective.com/beaker/backer/2/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/3/website" target="_blank"><img src="https://opencollective.com/beaker/backer/3/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/4/website" target="_blank"><img src="https://opencollective.com/beaker/backer/4/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/5/website" target="_blank"><img src="https://opencollective.com/beaker/backer/5/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/6/website" target="_blank"><img src="https://opencollective.com/beaker/backer/6/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/7/website" target="_blank"><img src="https://opencollective.com/beaker/backer/7/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/8/website" target="_blank"><img src="https://opencollective.com/beaker/backer/8/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/9/website" target="_blank"><img src="https://opencollective.com/beaker/backer/9/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/10/website" target="_blank"><img src="https://opencollective.com/beaker/backer/10/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/11/website" target="_blank"><img src="https://opencollective.com/beaker/backer/11/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/12/website" target="_blank"><img src="https://opencollective.com/beaker/backer/12/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/13/website" target="_blank"><img src="https://opencollective.com/beaker/backer/13/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/14/website" target="_blank"><img src="https://opencollective.com/beaker/backer/14/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/15/website" target="_blank"><img src="https://opencollective.com/beaker/backer/15/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/16/website" target="_blank"><img src="https://opencollective.com/beaker/backer/16/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/17/website" target="_blank"><img src="https://opencollective.com/beaker/backer/17/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/18/website" target="_blank"><img src="https://opencollective.com/beaker/backer/18/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/19/website" target="_blank"><img src="https://opencollective.com/beaker/backer/19/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/20/website" target="_blank"><img src="https://opencollective.com/beaker/backer/20/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/21/website" target="_blank"><img src="https://opencollective.com/beaker/backer/21/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/22/website" target="_blank"><img src="https://opencollective.com/beaker/backer/22/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/23/website" target="_blank"><img src="https://opencollective.com/beaker/backer/23/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/24/website" target="_blank"><img src="https://opencollective.com/beaker/backer/24/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/25/website" target="_blank"><img src="https://opencollective.com/beaker/backer/25/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/26/website" target="_blank"><img src="https://opencollective.com/beaker/backer/26/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/27/website" target="_blank"><img src="https://opencollective.com/beaker/backer/27/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/28/website" target="_blank"><img src="https://opencollective.com/beaker/backer/28/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/29/website" target="_blank"><img src="https://opencollective.com/beaker/backer/29/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/30/website" target="_blank"><img src="https://opencollective.com/beaker/backer/30/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/31/website" target="_blank"><img src="https://opencollective.com/beaker/backer/31/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/32/website" target="_blank"><img src="https://opencollective.com/beaker/backer/32/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/33/website" target="_blank"><img src="https://opencollective.com/beaker/backer/33/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/34/website" target="_blank"><img src="https://opencollective.com/beaker/backer/34/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/35/website" target="_blank"><img src="https://opencollective.com/beaker/backer/35/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/36/website" target="_blank"><img src="https://opencollective.com/beaker/backer/36/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/37/website" target="_blank"><img src="https://opencollective.com/beaker/backer/37/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/38/website" target="_blank"><img src="https://opencollective.com/beaker/backer/38/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/39/website" target="_blank"><img src="https://opencollective.com/beaker/backer/39/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/40/website" target="_blank"><img src="https://opencollective.com/beaker/backer/40/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/41/website" target="_blank"><img src="https://opencollective.com/beaker/backer/41/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/42/website" target="_blank"><img src="https://opencollective.com/beaker/backer/42/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/43/website" target="_blank"><img src="https://opencollective.com/beaker/backer/43/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/44/website" target="_blank"><img src="https://opencollective.com/beaker/backer/44/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/45/website" target="_blank"><img src="https://opencollective.com/beaker/backer/45/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/46/website" target="_blank"><img src="https://opencollective.com/beaker/backer/46/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/47/website" target="_blank"><img src="https://opencollective.com/beaker/backer/47/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/48/website" target="_blank"><img src="https://opencollective.com/beaker/backer/48/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/49/website" target="_blank"><img src="https://opencollective.com/beaker/backer/49/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/50/website" target="_blank"><img src="https://opencollective.com/beaker/backer/50/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/51/website" target="_blank"><img src="https://opencollective.com/beaker/backer/51/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/52/website" target="_blank"><img src="https://opencollective.com/beaker/backer/52/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/53/website" target="_blank"><img src="https://opencollective.com/beaker/backer/53/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/54/website" target="_blank"><img src="https://opencollective.com/beaker/backer/54/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/55/website" target="_blank"><img src="https://opencollective.com/beaker/backer/55/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/56/website" target="_blank"><img src="https://opencollective.com/beaker/backer/56/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/57/website" target="_blank"><img src="https://opencollective.com/beaker/backer/57/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/58/website" target="_blank"><img src="https://opencollective.com/beaker/backer/58/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/59/website" target="_blank"><img src="https://opencollective.com/beaker/backer/59/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/60/website" target="_blank"><img src="https://opencollective.com/beaker/backer/60/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/61/website" target="_blank"><img src="https://opencollective.com/beaker/backer/61/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/62/website" target="_blank"><img src="https://opencollective.com/beaker/backer/62/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/63/website" target="_blank"><img src="https://opencollective.com/beaker/backer/63/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/64/website" target="_blank"><img src="https://opencollective.com/beaker/backer/64/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/65/website" target="_blank"><img src="https://opencollective.com/beaker/backer/65/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/66/website" target="_blank"><img src="https://opencollective.com/beaker/backer/66/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/67/website" target="_blank"><img src="https://opencollective.com/beaker/backer/67/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/68/website" target="_blank"><img src="https://opencollective.com/beaker/backer/68/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/69/website" target="_blank"><img src="https://opencollective.com/beaker/backer/69/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/70/website" target="_blank"><img src="https://opencollective.com/beaker/backer/70/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/71/website" target="_blank"><img src="https://opencollective.com/beaker/backer/71/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/72/website" target="_blank"><img src="https://opencollective.com/beaker/backer/72/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/73/website" target="_blank"><img src="https://opencollective.com/beaker/backer/73/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/74/website" target="_blank"><img src="https://opencollective.com/beaker/backer/74/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/75/website" target="_blank"><img src="https://opencollective.com/beaker/backer/75/avatar.svg"/></a>
 
 ## Changelog
 
 ### v2.0.0
 
  - Removed the `dats.*.name` field. You can now set the domains for your dats directly with the `dat.*.domains` field.
- - Moved the `domain` config from the top of the yaml file to the `webapi` field. This makes it clearer what the domain applies to. (It is also optional unless you want letsencrypt.)
+ - Moved the `domain` config from the top of the yaml file to the `webapi` field. This makes it clearer what the domain applies to. Optional, unless you want to use Let's Encrypt.
 
-The original release of Homebase tried to mimic [Hashbase](https://github.com/beakerbrowser/hashbase) as closely as possible. As a result, it had a concept of a root domain and each dat was given a `name` which became a subdomain under that root domain. This confused most users and was generally regarded as "the worst." To simplify the config process, we have removed the concept of the root domain and `name` attribute. Now, you just set the domains directly on each dat. (We're going to update Hashbase to fit this model as well.)
+The original release of `homebase` tried to mimic [Hashbase](https://github.com/beakerbrowser/hashbase) as closely as possible. As a result, it had a concept of a root domain and each dat was given a `name` which became a subdomain under that root domain. This confused most users and was generally regarded as "the worst." To simplify the config process, we removed the concept of the root domain and `name` attribute. Now, you just set the domains directly on each dat.
 
-If your previous config looked like:
+#### Migrating to v2.0.0
+
+If your previous config file looked like this:
 
 ```yaml
 domain: foo.com
@@ -457,7 +562,7 @@ dats:
       - my-site.com
 ```
 
-It should now look like this:
+After migrating, it should look like this:
 
 ```yaml
 dats:
@@ -468,7 +573,7 @@ dats:
       - my-site.com
 ```
 
-If you want to use the web api at a domain, you should move the `domain` to the `webapi` field. So, if your config looked like:
+If you want to use the Web API at a domain, you should move the `domain` option to the `webapi` field. So, if your config file looked like this:
 
 ```yaml
 domain: foo.com
@@ -485,4 +590,3 @@ webapi:
   username: admin
   password: hunter2
 ```
- 
