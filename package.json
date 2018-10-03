@@ -29,7 +29,7 @@
     "mime": "^2.3.1",
     "mkdirp": "^0.5.1",
     "ms": "^2.1.1",
-    "pauls-dat-api": "^7.2.4",
+    "pauls-dat-api": "^8.0.0",
     "prom-client": "^11.0.0",
     "range-parser": "^1.2.0",
     "redirect-https": "^1.1.6",
