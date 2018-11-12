@@ -1,6 +1,5 @@
 # Credits: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
-
-FROM node
+FROM node:8.12.0-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
