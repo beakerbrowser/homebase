@@ -1,11 +1,7 @@
 # Credits: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
-FROM node:8.12.0-alpine
+FROM node:8.12.0-jessie
 
-# Credits: https://github.com/nodejs/docker-node/issues/282#issuecomment-358907790
-RUN apk --no-cache --virtual build-dependencies add \
-    python \
-    make \
-    g++
+RUN apt-get update && apt-get install -y libtool m4 automake libcap2-bin build-essential
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -17,9 +13,7 @@ COPY package*.json ./
 
 # If you are building your code for production
 RUN npm install --only=production
-
-# Credits: https://github.com/nodejs/docker-node/issues/282#issuecomment-358907790
-RUN apk del build-dependencies
+RUN npm install pm2 -g
 
 COPY . .
 
@@ -34,4 +28,4 @@ ENV NODE_ENV production
 # If you have Beaker opened, you may want to change the 3282 port. E.g., to run with -p 9999:3282
 EXPOSE 80 443 3282 8089
 
-CMD [ "npm", "start" ]
+CMD [ "pm2-runtime", "npm", "--", "start" ]
