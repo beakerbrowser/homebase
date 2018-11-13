@@ -6,8 +6,10 @@ ports:
 #letsencrypt:           # set to false to disable lets-encrypt
 #  email: bob@foo.com   # you must provide your email to LE for admin
 #  agreeTos: true       # you must agree to the LE terms (set to true)
-dashboard:             # set to false to disable
-  port: 8089           # port for accessing the metrics dashboard
+
+# Note: exposes a web-page that's available *without* authentication and has your dats' urls on it.
+#dashboard:             # set to false to disable
+#  port: 8089           # port for accessing the metrics dashboard
 
 # enable publishing to Homebase from Beaker & Dat-CLI
 webapi:                # set to false to disable

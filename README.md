@@ -516,7 +516,7 @@ If you don't want to think of a username and a password, just use [this](https:/
 3. In the project root, run this command:
 
 ```
-docker build -t homebase:latest . && docker run -d --name=homebase --restart=always -p 80:80 -p 443:443 -p 3282:3282 -p 8089:8089 homebase:latest
+docker build -t homebase:latest . && docker run -d --name=homebase --restart=always -p 80:80 -p 443:443 -p 3282:3282 homebase:latest
 ```
 
 **Notes:**  
