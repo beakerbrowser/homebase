@@ -524,8 +524,8 @@ docker build -t homebase:latest . && docker run -d --name=homebase --restart=alw
 2. if you have Beaker on the same machine, you may want to change the dat port `-p 3282:3282` to something like `-p 9999:3282`.  
 3. To debug the running container:
    - Run `docker ps -a` to see the container running status.  
-   - Run `docker logs homebase` to see the logs (Note: don't expect much).
-   - Run `docker exec -it homebase sh` to get into a terminal. However, the container's base image is `alpine` and doesn't have many tools; you may want to change the first line in `Dockerfile` to `FROM node:8.2.10-jessie`
+   - Run `docker logs homebase` to see the logs.
+   - Run `docker exec -it homebase sh` to get into a terminal.
 4. Didn't think about how you'd install a newer version of homebase while keeping the old configuration and data.
 
 ## Troubleshooting
