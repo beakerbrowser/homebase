@@ -506,6 +506,28 @@ ports:
 
 You will need to add all domains to your Nginx/Apache config.
 
+### Example: running homebase in a docker container
+
+1. Install [Docker](http://docker.com/). If you're on Linux, remember to [configure Docker to start on boot](https://docs.docker.com/install/linux/linux-postinstall/). Don't know of the equivalent for other systems.
+
+2. Clone the project. Edit `.homebase.yml` according to your needs. Most importantly: **Change username and password**.  
+If you don't want to think of a username and a password, just use [this](https://stackoverflow.com/a/1349426/6690391) but **increase the length**.
+
+3. In the project root, run this command:
+
+```
+docker build -t homebase:latest . && docker run -d --name=homebase --restart=always -p 80:80 -p 443:443 -p 3282:3282 homebase:latest
+```
+
+**Notes:**  
+1. Not an expert in Docker security or configuration.  
+2. if you have Beaker on the same machine, you may want to change the dat port `-p 3282:3282` to something like `-p 9999:3282`.  
+3. To debug the running container:
+   - Run `docker ps -a` to see the container running status.  
+   - Run `docker logs homebase` to see the logs.
+   - Run `docker exec -it homebase sh` to get into a terminal.
+4. Didn't think about how you'd install a newer version of homebase while keeping the old configuration and data.
+
 ## Troubleshooting
 
 ### Installing build dependencies
