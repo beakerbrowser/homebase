@@ -555,7 +555,7 @@ This will give nodejs the rights to use ports 80 and 443. This is preferable to 
 
 ## Support
 
-`homebase` is built by the [Beaker Browser team](https://beakerbrowser.com/about.html). Become a backer and help support the development of an open, friendly, and fun Web. You can help us continue our work on Beaker, [hashbase.io](https://hashbase.io), `homebase`, and more. Thank you!
+`homebase` is built by the [Beaker Browser team](https://beakerbrowser.com/about). Become a backer and help support the development of an open, friendly, and fun Web. You can help us continue our work on Beaker, [hashbase.io](https://hashbase.io), `homebase`, and more. Thank you!
 
 [Become a backer](https://opencollective.com/beaker)
 
