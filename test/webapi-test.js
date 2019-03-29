@@ -76,6 +76,8 @@ dats:
   })
   t.deepEqual(res.statusCode, 200)
   t.deepEqual(res.body.username, 'bob')
+  t.not(res.body.diskQuota, undefined)
+  t.not(res.body.diskUsed, undefined)
 
   // can list dats
   res = await server.req.get({

@@ -6,6 +6,7 @@ ports:
 #letsencrypt:           # set to false to disable lets-encrypt
 #  email: bob@foo.com   # you must provide your email to LE for admin
 #  agreeTos: true       # you must agree to the LE terms (set to true)
+diskQuota: 0            # disk quota in bytes, 100 MB = 100000000; 0 = no quota
 
 # Note: exposes a web-page that's available *without* authentication and has your dats' urls on it.
 #dashboard:             # set to false to disable

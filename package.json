@@ -16,6 +16,7 @@
     "dat-node": "^3.5.9",
     "express": "^4.16.3",
     "figures": "^2.0.0",
+    "get-folder-size": "^2.0.1",
     "greenlock": "^2.3.11",
     "http-body-parser": "^1.1.9",
     "http-proxy": "^1.17.0",
