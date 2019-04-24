@@ -1,5 +1,5 @@
 # Credits: https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
-FROM node:8.12.0-jessie
+FROM node:8-stretch
 
 RUN apt-get update && apt-get install -y libtool m4 automake libcap2-bin build-essential
 
