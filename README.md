@@ -513,20 +513,27 @@ You will need to add all domains to your Nginx/Apache config.
 2. Clone the project. Edit `.homebase.yml` according to your needs. Most importantly: **Change username and password**.  
 If you don't want to think of a username and a password, just use [this](https://stackoverflow.com/a/1349426/6690391) but **increase the length**.
 
-3. In the project root, run this command:
+3. In the project root, run one of the following commands:
 
-```
+```bash
+# Using docker
 docker build -t homebase:latest . && docker run -d --name=homebase --restart=always -p 80:80 -p 443:443 -p 3282:3282 homebase:latest
+
+# Using docker-compose
+docker-compose up -d --build
 ```
 
 **Notes:**  
 1. Not an expert in Docker security or configuration.  
-2. if you have Beaker on the same machine, you may want to change the dat port `-p 3282:3282` to something like `-p 9999:3282`.  
-3. To debug the running container:
+2. If you have Beaker on the same machine, you may want to change the dat port `-p 3282:3282` to something like `-p 9999:3282`.  
+3. If you want to make your archive file persistent, uncomment the second lin in the `volumes` section of the `docker-compose.yml` file. This will create an `archives` folder outside of the container with all archives in it.
+4. To debug the running container:
    - Run `docker ps -a` to see the container running status.  
-   - Run `docker logs homebase` to see the logs.
+   - Run `docker logs homebase` or `docker-compose logs` to see the logs.
    - Run `docker exec -it homebase sh` to get into a terminal.
-4. Didn't think about how you'd install a newer version of homebase while keeping the old configuration and data.
+5. If you want to make the statistics port available, add either `-p 8089:8089` or uncomment the corresponding line in the docker-compose.yml file.
+6. Didn't think about how you'd install a newer version of homebase while keeping the old configuration and data. 
+
 
 ## Troubleshooting
 

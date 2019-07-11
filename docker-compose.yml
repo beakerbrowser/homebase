@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+  homebase:
+    container_name: 'homebase'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./.homebase.yml:/root/.homebase.yml:ro
+      #- ./archives:/root/.homebase:rw
+    ports:
+      - '3282:3282'
+      - '80:80'
+      - '443:443'
+      #- '8089:8089'
