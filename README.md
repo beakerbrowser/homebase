@@ -121,7 +121,7 @@ dats:
 
 In addition to being used to manage a website, `homebase` can be used with more specific configurations, like providing a mini-pinning service for a group of friends.
 
-This example enables the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/), which makes it possible for you (and maybe a few friends!) to publish to your `homebase` instance with [Beaker](https://beakerbrowser.com), the [Dat CLI](https://npm.im/dat), or any client that supports the Pinning Service API.
+This example enables the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/), which makes it possible for you (and maybe a few friends!) to publish to your `homebase` instance with the [Dat CLI](https://npm.im/dat), or any client that supports the Pinning Service API. There are plans to support publishing from within [Beaker](https://beakerbrowser.com) in the future.
 
 If you choose to use a domain name for your API endpoint, be sure to configure your DNS to point to your `homebase` server.
 
