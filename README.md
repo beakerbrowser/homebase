@@ -6,7 +6,7 @@
 
 - You're comfortable with some server administration (or want to learn!)
 - You want to keep your hyper:// website/s online
-- You want to publish your hyper:// website/s to https://
+- You want to publish your hyper:// website/s to http://
 
 ## Table of contents
 
@@ -79,9 +79,9 @@ pm2 stop homebase
 
 [See all configuration options](#configuration)
 
-### Example: set up a hyperdrive with HTTPS mirroring
+### Example: set up a hyperdrive with HTTP mirroring
 
-This configuration file will hot the files at `hyper://123...456` and mirror those files to `https://alice.com`.
+This configuration file will hot the files at `hyper://123...456` and mirror those files to `http://alice.com`.
 
 This example uses a domain name, so in order for the domain name to resolve correctly, you'll need to update your DNS configuration first. In this case, you could set an `A` record that points to the `homebase` server's IP address.
 
@@ -91,13 +91,9 @@ hyperdrives:
     domains:
       - alice.com
 httpMirror: true
-letsencrypt:
-  email: alice@mail.com
-  agreeTos: true
-
 ```
 
-### Example: host multiple websites, with no HTTPS mirroring
+### Example: host multiple websites, with no HTTP mirroring
 
 This configuration simply hosts the files at `hyper://123...456` and `hyper:///456...789`. No domain name is required for this configuration.
 
@@ -118,12 +114,8 @@ hyperdrives:
 - [directory](#directory)
 - [domain](#domain)
 - [httpMirror](#httpmirror)
-- [letsencrypt](#letsencrypt)
-  - [letsencrypt.email](#letsencryptemail)
-  - [letsencrypt.agreeTos](#letsencryptagreetos)
 - [ports](#ports)
   - [ports.http](#portshttp)
-  - [ports.https](#portshttps)
 - [proxies](#proxies)
   - [proxies.*.from](#proxiesfrom)
   - [proxies.*.to](#proxiesto)
@@ -141,10 +133,6 @@ directory: ~/.homebase # where your data will be stored
 httpMirror: true       # enables HTTP mirroring
 ports:
   http: 80             # HTTP port for redirects or non-TLS serving
-  https: 443           # HTTPS port for serving mirrored content and DNS data
-letsencrypt:           # set to false to disable Let's Encrypt
-  email:               # you must provide your email to LE for admin
-  agreeTos: true       # you must agree to the LE terms (set to true)
 dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
 
@@ -240,36 +228,15 @@ The DNS domain of your homebase instance.
 
 Default: `false`
 
-Set to `true` to provide https mirroring of your Hyperdrives.
-
-### letsencrypt
-
-Default: `false`
-
-Set to `true` to enable Lets Encrypt's automatic TLS certificate provisioning.
-
-```yaml
-letsencrypt:           # set to false to disable Let's Encrypt
-  email:               # you must provide your email to LE for admin
-  agreeTos: true       # you must agree to the LE terms (set to true)
-```
-
-#### letsencrypt.email
-
-The email to send Let's Encrypt notices to.
-
-#### letsencrypt.agreeTos
-
-Do you agree to the [terms of service of Lets Encrypt](https://letsencrypt.org/repository/)? Required, must be true.
+Set to `true` to provide http mirroring of your Hyperdrives.
 
 ### ports
 
-The ports for HTTP and HTTPS.
+The ports for HTTP.
 
 ```yaml
 ports:
-  http: 80             # HTTP port for redirects or non-TLS serving
-  https: 443           # HTTPS port for serving mirrored content and DNS data
+  http: 80
 ```
 
 #### ports.http
@@ -277,14 +244,6 @@ ports:
 Default: `80`
 
 The port for serving HTTP sites.
-
-HTTP automatically redirects to HTTPS.
-
-#### ports.https
-
-Default: `443`
-
-The port for serving HTTPS sites.
 
 ### proxies
 
@@ -412,10 +371,9 @@ scrape_configs:
 
 ### Example: running homebase behind Apache or Nginx
 
-If you're running `homebase` on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to disable Let's Encrypt and to set the HTTP port:
+If you're running `homebase` on a server that uses Apache or Nginx, you may need to change your config to disable HTTPS. For instance, if you're using nginx and proxying to port `8080`, update your config to set the HTTP port:
 
 ```yaml
-letsencrypt: false
 ports:
   http: 8080
 ```
@@ -482,9 +440,10 @@ This will give nodejs the rights to use ports 80 and 443. This is preferable to 
 
 ### v3.0.0
 
- - Added Hyperdrive support
+ - Added Hyperdrive support.
  - Deprecated Dat support. If you still need dat support, you'll need to use Homebase v2.
- - Deprecated the Web API
+ - Deprecated the Web API.
+ - Deprecated Lets Encrypt due to Greenlock changing too much to keep up with.
 
 ### v2.0.0
 

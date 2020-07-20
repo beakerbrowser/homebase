@@ -11,15 +11,10 @@
     "test": "test"
   },
   "dependencies": {
-    "@greenlock/manager": "^3.1.0",
-    "@root/greenlock": "^4.0.4",
-    "acme-http-01-standalone": "^3.0.5",
     "chalk": "^2.4.1",
     "compression": "^1.7.3",
     "express": "^4.16.3",
     "figures": "^2.0.0",
-    "greenlock": "^4.0.4",
-    "greenlock-store-fs": "^3.2.2",
     "http-body-parser": "^1.1.9",
     "http-proxy": "^1.17.0",
     "hyperdrive": "^10.14.1",
