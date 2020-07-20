@@ -1,25 +1,18 @@
 directory: ~/.homebase # where your data will be stored
 httpMirror: true       # enables http mirrors of the dats
 ports:
-  http: 80             # HTTP port for redirects or non-SSL serving
-  https: 443           # HTTPS port for serving mirrored content & DNS data
+  http: 80             # HTTP port for serving
 #letsencrypt:           # set to false to disable lets-encrypt
 #  email: bob@foo.com   # you must provide your email to LE for admin
 #  agreeTos: true       # you must agree to the LE terms (set to true)
 
-# Note: exposes a web-page that's available *without* authentication and has your dats' urls on it.
+# Note: exposes a web-page that's available *without* authentication and has your hyper and dat urls on it.
 #dashboard:             # set to false to disable
 #  port: 8089           # port for accessing the metrics dashboard
 
-# enable publishing to Homebase from Beaker & Dat-CLI
-webapi:                # set to false to disable
-  username: robert     # the username for publishing from Beaker/Dat-CLI
-  password: hunter2    # the password for publishing from Beaker/Dat-CLI
-#  domain: foo.bar
-
-# enter your pinned dats here
-dats: []               # `[]` for empty list. Remove it `[]` if you have dats listed
-#- url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+# enter your pinned hyperdrives here
+hyperdrives: []               # `[]` for empty list. Remove the `[]` if you have hyperdrives listed
+#- url: hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
 #  domains:
 #  - mysite.com
 #  - my-site.com
@@ -28,7 +21,7 @@ dats: []               # `[]` for empty list. Remove it `[]` if you have dats li
 #  - othersite.com
 
 # enter any proxied routes here
-proxies: []            # `[]` for empty list. Remove it `[]` if you have proxies listed
+proxies: []            # `[]` for empty list. Remove the `[]` if you have proxies listed
 #- from: myproxy.com
 #  to: https://mysite.com/
 #- from: foo.proxy.edu
@@ -37,7 +30,7 @@ proxies: []            # `[]` for empty list. Remove it `[]` if you have proxies
 #  to: http://127.0.0.1:123/
 
 # enter any redirect routes here
-redirects: []          # `[]` for empty list. Remove it `[]` if you have proxies listed
+redirects: []          # `[]` for empty list. Remove the `[]` if you have proxies listed
 #- from: myredirect.com
 #  to: https://mysite.com/
 #- from: foo.redirect.edu

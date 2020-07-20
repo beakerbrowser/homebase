@@ -2,22 +2,12 @@ directory: ~/.homebase # where your data will be stored
 httpMirror: true       # enables http mirrors of the dats
 ports:
   http: 80             # HTTP port for redirects or non-SSL serving
-  https: 443           # HTTPS port for serving mirrored content & DNS data
-letsencrypt:           # set to false to disable lets-encrypt
-  email: bob@foo.com   # you must provide your email to LE for admin
-  agreeTos: true       # you must agree to the LE terms (set to true)
 dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
 
-# enable publishing to Homebase from Beaker & Dat-CLI
-webapi:                # set to false to disable
-  username: robert     # the username for publishing from Beaker/Dat-CLI
-  password: hunter2    # the password for publishing from Beaker/Dat-CLI
-  domain: foo.bar
-
-# enter your pinned dats here
-dats:
-  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+# enter your hosted hyperdrives here
+hyperdrives:
+  - url: hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
     domains:
       - mysite.com
       - my-site.com
