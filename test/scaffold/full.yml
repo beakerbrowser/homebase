@@ -2,7 +2,6 @@ directory: ~/.homebase # where your data will be stored
 httpMirror: true       # enables http mirrors of the dats
 ports:
   http: 80             # HTTP port for redirects or non-SSL serving
-  https: 443           # HTTPS port for serving mirrored content & DNS data
 dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
 

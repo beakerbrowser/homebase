@@ -13,7 +13,7 @@ test('empty config', t => {
   t.deepEqual(cfg.configPath, scaffold('empty.yml'))
   t.deepEqual(cfg.directory, DATADIR)
   t.deepEqual(cfg.httpMirror, false)
-  t.deepEqual(cfg.ports, {http: 80, https: 443})
+  t.deepEqual(cfg.ports, {http: 80})
   t.deepEqual(cfg.dashboard, false)
   t.deepEqual(cfg.hyperdrives, [])
   t.deepEqual(cfg.proxies, [])
@@ -28,8 +28,7 @@ test('full config test', t => {
     directory: '~/.homebase',
     httpMirror: true,
     ports: {
-      http: 80,
-      https: 443
+      http: 80
     },
     dashboard: {port: 8089},
     hyperdrives: [
@@ -61,8 +60,7 @@ test('full config test', t => {
   t.deepEqual(cfg.directory, DATADIR)
   t.deepEqual(cfg.httpMirror, true)
   t.deepEqual(cfg.ports, {
-    http: 80,
-    https: 443
+    http: 80
   })
   t.deepEqual(cfg.dashboard, {port: 8089})
   t.deepEqual(extractHyperdriveCfg(cfg.hyperdrives[0]), {
@@ -107,7 +105,7 @@ test('can do (mostly) everything disabled', t => {
   t.deepEqual(cfg.configPath, scaffold('everything-disabled.yml'))
   t.deepEqual(cfg.directory, DATADIR)
   t.deepEqual(cfg.httpMirror, false)
-  t.deepEqual(cfg.ports, {http: 80, https: 443})
+  t.deepEqual(cfg.ports, {http: 80})
   t.deepEqual(cfg.dashboard, false)
   t.deepEqual(cfg.hyperdrives, [])
   t.deepEqual(cfg.proxies, [])
