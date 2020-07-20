@@ -9,15 +9,9 @@ letsencrypt:           # set to false to disable lets-encrypt
 dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
 
-# enable publishing to Homebase from Beaker & Dat-CLI
-webapi:                # set to false to disable
-  username: robert     # the username for publishing from Beaker/Dat-CLI
-  password: hunter2    # the password for publishing from Beaker/Dat-CLI
-  domain: foo.bar
-
-# enter your pinned dats here
-dats:
-  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+# enter your hosted hyperdrives here
+hyperdrives:
+  - url: hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
     domains:
       - mysite.com
       - my-site.com

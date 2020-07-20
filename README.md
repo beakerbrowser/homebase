@@ -1,18 +1,15 @@
 # homebase
 
-`homebase` is a self-deployable tool for managing websites published with the [Dat protocol](https://datprotocol.com).
+`homebase` is a self-deployable tool for managing websites published with the [Hypercore protocol](https://hypercore-protocol.org/).
 
 `homebase` is for you if:
 
 - You're comfortable with some server administration (or want to learn!)
-- You want to keep your dat:// website/s online
-- You want to publish your dat:// website/s to a domain name
-
-Don't want to run `homebase` yourself? You can still make sure your dat:// website stays online by using a service like [Hashbase](https://hashbase.io). Or maybe you can convince a generous friend to run an instance of `homebase` using its built-in [Pinning Service APIs](#example-seed-multiple-websites-enable-web-api).
+- You want to keep your hyper:// website/s online
+- You want to publish your hyper:// website/s to https://
 
 ## Table of contents
 
-- [Features](#features)
 - [Install](#install)
 - [Running homebase](#running-homebase)
 - [Examples](#examples)
@@ -23,17 +20,9 @@ Don't want to run `homebase` yourself? You can still make sure your dat:// websi
 - [Web API Clients](#web-api-clients)
 - [Changelog](#changelog)
 
-## Features
-
-- Keeps dat:// websites online
-- Publishes dat:// websites to DNS shortnames
-- Mirrors dat:// websites to https://
-- Provisions and manages HTTPS with [Let's Encrypt](https://letsencrypt.org)
-- Provides optional [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/) endpoints
-
 ## Install
 
-If you already have [Node.js](https://nodejs.org) (8.0+) and [npm](https://npmjs.com) installed on your server, get started by installing Homebase with npm or [npx](https://github.com/zkat/npx).
+If you already have [Node.js](https://nodejs.org) (12.0+) and [npm](https://npmjs.com) installed on your server, get started by installing Homebase with npm or [npx](https://github.com/zkat/npx).
 
 ```bash
 npm install -g @beaker/homebase
@@ -90,15 +79,15 @@ pm2 stop homebase
 
 [See all configuration options](#configuration)
 
-### Example: set up a website with a domain name and HTTP mirroring
+### Example: set up a hyperdrive with HTTPS mirroring
 
-This configuration file will "seed" or "pin" the files at `dat://123...456`, publish those files to `dat://alice.com`, and mirror them to `https://alice.com`.
+This configuration file will hot the files at `hyper://123...456` and mirror those files to `https://alice.com`.
 
 This example uses a domain name, so in order for the domain name to resolve correctly, you'll need to update your DNS configuration first. In this case, you could set an `A` record that points to the `homebase` server's IP address.
 
 ```yaml
-dats:
-  - url: dat://123...456
+hyperdrives:
+  - url: hyper://123...456
     domains:
       - alice.com
 httpMirror: true
@@ -108,32 +97,14 @@ letsencrypt:
 
 ```
 
-### Example: seed multiple websites, with no domain names
+### Example: host multiple websites, with no HTTPS mirroring
 
-This configuration simply "seeds" or "pins" the files at `dat://123...456` and `dat:///456...789`. No domain name is required for this configuration.
-
-```yaml
-dats:
-  - url: dat://123...456
-  - url: dat://456...789
-```
-
-### Example: seed multiple websites, enable Web API
-
-In addition to being used to manage a website, `homebase` can be used with more specific configurations, like providing a mini-pinning service for a group of friends.
-
-This example enables the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/), which makes it possible for you (and maybe a few friends!) to publish to your `homebase` instance with the [Dat CLI](https://npm.im/dat), or any client that supports the Pinning Service API. There are plans to support publishing from within [Beaker](https://beakerbrowser.com) in the future.
-
-If you choose to use a domain name for your API endpoint, be sure to configure your DNS to point to your `homebase` server.
-
-[See full `webapi` reference](#webapi)
+This configuration simply hosts the files at `hyper://123...456` and `hyper:///456...789`. No domain name is required for this configuration.
 
 ```yaml
-# enable publishing to `homebase` from Beaker and the Dat CLI
-webapi:                # set to false to disable
-  domain:              # the domain name for the web API (optional)
-  username:            # the username for publishing from Beaker or the Dat CLI
-  password:            # the password for publishing from Beaker or the Dat CLI
+hyperdrives:
+  - url: hyper://123...456
+  - url: hyper://456...789
 ```
 
 ## Configuration
@@ -141,11 +112,9 @@ webapi:                # set to false to disable
 - [Configuration file](#configuration-file)
 - [dashboard](#dashboard)
   - [dashboard.port](#dashboardport)
-- [dats](#dats)
-  - [dats.*.url](#datsurl)
-  - [dats.*.domains](#datsdomains)
-  - [dats.*.name](#datsname)
-  - [dats.*.otherDomains](#datsotherdomains)
+- [hyperdrives](#hyperdrives)
+  - [hyperdrives.*.url](#hyperdrivesurl)
+  - [hyperdrives.*.domains](#hyperdrivesdomains)
 - [directory](#directory)
 - [domain](#domain)
 - [httpMirror](#httpmirror)
@@ -161,10 +130,6 @@ webapi:                # set to false to disable
 - [redirects](#redirects)
   - [redirects.*.from](#redirectsfrom)
   - [redirects.*.to](#redirectsto)
-- [webapi](#webapi)
-  - [webapi.username](#webapiusername)
-  - [webapi.password](#webapipassword)
-  - [webapi.domain](#webapidomain)
 
 ### Configuration file
 
@@ -183,16 +148,10 @@ letsencrypt:           # set to false to disable Let's Encrypt
 dashboard:             # set to false to disable
   port: 8089           # port for accessing the metrics dashboard
 
-# enable publishing to homebase from Beaker and the Dat CLI
-webapi:                # set to false to disable
-  domain:              # enter your web API's domain here (optional, unless Let's Encrypt TLS is wanted on the web API)
-  username:            # the username for publishing from Beaker or the Dat CLI
-  password:            # the password for publishing from Beaker or the Dat CLI
-
-# enter your pinned dats here
-dats:
-  - url:               # URL of the dat to be pinned
-    domains:           # (optional) the domains of the dat
+# enter your hosted hyperdrives here
+hyperdrives:
+  - url:               # URL of the hyperdrive to be hosted
+    domains:           # (optional) the domains of the hyperdrive
 
 # enter any proxied routes here
 proxies:
@@ -222,21 +181,21 @@ Default: `8089`
 
 The port to serve the [Prometheus metrics dashboard](#example-using-a-metrics-dashboard).
 
-### dats
+### hyperdrives
 
-A listing of the Dat archives to seed.
+A listing of the Hyperdrives to host.
 
 ```yaml
-dats:
-  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+hyperdrives:
+  - url: hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
     domains:
       - mysite.com
       - my-site.com
 ```
 
-#### dats.*.url
+#### hyperdrives.*.url
 
-The Dat URL of the site to host. Should be a 'raw' dat url (no DNS hostname).
+The Hyperdrive URL of the site to host. Should be a 'raw' hyper url (no DNS hostname).
 
 Example values:
 
@@ -245,37 +204,19 @@ Example values:
 1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03
 
 # URL with trailing slash
-dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
+hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
 
 # URL with no trailing slash
-dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03
+hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03
 ```
 
-#### dats.*.domains
+#### hyperdrives.*.domains
 
-Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name.
+Additional domains of the Hyperdrive. Can be a string or a list of strings. Each string should be a domain name.
 
-To use `dats.*.domains`, you'll first need to configure the DNS entry for your domain name to point to your server. For instance, to point `alice.com` with `homebase`, you'll need to update your DNS configuration to point `alice.com` to your homebase server's IP address.
+To use `hyperdrives.*.domains`, you'll first need to configure the DNS entry for your domain name to point to your server. For instance, to point `alice.com` with `homebase`, you'll need to update your DNS configuration to point `alice.com` to your homebase server's IP address.
 
 Example values:
-
-```
-mysite.com
-foo.bar.edu
-best-site-ever.link
-```
-
-#### dats.*.name
-
-**DEPRECATED**. See the [v2.0.0 migration guide](#migrating-to-v2-0-0).
-
-The name of the Dat archive. Sets a subdomain relative to the Web API domain, similar to the way that [Hashbase](https://hashbase.io) does. Must be unique on the `homebase` instance.
-
-#### dats.*.otherDomains
-
-**DEPRECATED**. Use the [domains field](#dats-domains) instead.
-
-Additional domains of the Dat archive. Can be a string or a list of strings. Each string should be a domain name. Example values:
 
 ```
 mysite.com
@@ -287,7 +228,7 @@ best-site-ever.link
 
 Default:  `~/.homebase`
 
-The directory where `homebase` will store your Dat archive's files.
+The directory where `homebase` will store your data.
 
 ### domain
 
@@ -299,7 +240,7 @@ The DNS domain of your homebase instance.
 
 Default: `false`
 
-Set to `true` to provide https mirroring of your Dat archives.
+Set to `true` to provide https mirroring of your Hyperdrives.
 
 ### letsencrypt
 
@@ -413,32 +354,6 @@ http://localhost:8080/
 http://127.0.0.1:123/
 ```
 
-### webapi
-
-Default: `false`
-
-Set to `true` to enable the [Pinning Service API](https://www.datprotocol.com/deps/0003-http-pinning-service-api/), which enables publishing to Homebase with [Beaker](https://beakerbrowser.com), the [Dat CLI](https://npm.im/dat), or any other client that supports the Pinning Service API.
-
-```yaml
-# enable publishing to `homebase` from Beaker and the Dat CLI
-webapi:                # set to false to disable
-  domain:              # the domain of the web api (optional)
-  username:            # the username for publishing from Beaker or the Dat CLI
-  password:            # the password for publishing from Beaker or the Dat CLI
-```
-
-#### webapi.username
-
-The username for your pinning service API.
-
-#### webapi.password
-
-The password for your pinning service API.
-
-#### webapi.domain
-
-The DNS domain of your homebase Web API. Optional, but required if you want Let's Encrypt to provide your Web API with a TLS certificate.
-
 ## Advanced examples
 
 ### Example: proxies
@@ -522,7 +437,7 @@ docker build -t homebase:latest . && docker run -d --name=homebase --restart=alw
 
 **Notes:**  
 1. Not an expert in Docker security or configuration.  
-2. if you have Beaker on the same machine, you may want to change the dat port `-p 3282:3282` to something like `-p 9999:3282`.  
+2. if you have Beaker on the same machine, you may want to change the hyperdrive port `-p 3282:3282` to something like `-p 9999:3282`.  
 3. To debug the running container:
    - Run `docker ps -a` to see the container running status.  
    - Run `docker logs homebase` to see the logs.
@@ -541,7 +456,7 @@ sudo apt-get install libtool m4 automake libcap2-bin build-essential
 
 ### Port setup (EACCES error)
 
-For `homebase` to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (dat). Your firewall should be configured to allow traffic on those ports.
+For `homebase` to work correctly, you need to be able to access port 80 (http), 443 (https), and 3282 (hyperdrive). Your firewall should be configured to allow traffic on those ports.
 
 If you get an EACCES error on startup, you either have a process using the port already, or you lack permission to use the port. Try `lsof -i tcp:80` or `lsof -i tcp:443` to see if there are any processes bound to the ports you need.
 
@@ -562,11 +477,14 @@ This will give nodejs the rights to use ports 80 and 443. This is preferable to 
 
 <a href="https://opencollective.com/beaker/backer/0/website" target="_blank"><img src="https://opencollective.com/beaker/backer/0/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/1/website" target="_blank"><img src="https://opencollective.com/beaker/backer/1/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/2/website" target="_blank"><img src="https://opencollective.com/beaker/backer/2/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/3/website" target="_blank"><img src="https://opencollective.com/beaker/backer/3/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/4/website" target="_blank"><img src="https://opencollective.com/beaker/backer/4/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/5/website" target="_blank"><img src="https://opencollective.com/beaker/backer/5/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/6/website" target="_blank"><img src="https://opencollective.com/beaker/backer/6/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/7/website" target="_blank"><img src="https://opencollective.com/beaker/backer/7/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/8/website" target="_blank"><img src="https://opencollective.com/beaker/backer/8/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/9/website" target="_blank"><img src="https://opencollective.com/beaker/backer/9/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/10/website" target="_blank"><img src="https://opencollective.com/beaker/backer/10/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/11/website" target="_blank"><img src="https://opencollective.com/beaker/backer/11/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/12/website" target="_blank"><img src="https://opencollective.com/beaker/backer/12/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/13/website" target="_blank"><img src="https://opencollective.com/beaker/backer/13/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/14/website" target="_blank"><img src="https://opencollective.com/beaker/backer/14/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/15/website" target="_blank"><img src="https://opencollective.com/beaker/backer/15/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/16/website" target="_blank"><img src="https://opencollective.com/beaker/backer/16/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/17/website" target="_blank"><img src="https://opencollective.com/beaker/backer/17/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/18/website" target="_blank"><img src="https://opencollective.com/beaker/backer/18/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/19/website" target="_blank"><img src="https://opencollective.com/beaker/backer/19/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/20/website" target="_blank"><img src="https://opencollective.com/beaker/backer/20/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/21/website" target="_blank"><img src="https://opencollective.com/beaker/backer/21/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/22/website" target="_blank"><img src="https://opencollective.com/beaker/backer/22/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/23/website" target="_blank"><img src="https://opencollective.com/beaker/backer/23/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/24/website" target="_blank"><img src="https://opencollective.com/beaker/backer/24/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/25/website" target="_blank"><img src="https://opencollective.com/beaker/backer/25/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/26/website" target="_blank"><img src="https://opencollective.com/beaker/backer/26/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/27/website" target="_blank"><img src="https://opencollective.com/beaker/backer/27/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/28/website" target="_blank"><img src="https://opencollective.com/beaker/backer/28/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/29/website" target="_blank"><img src="https://opencollective.com/beaker/backer/29/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/30/website" target="_blank"><img src="https://opencollective.com/beaker/backer/30/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/31/website" target="_blank"><img src="https://opencollective.com/beaker/backer/31/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/32/website" target="_blank"><img src="https://opencollective.com/beaker/backer/32/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/33/website" target="_blank"><img src="https://opencollective.com/beaker/backer/33/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/34/website" target="_blank"><img src="https://opencollective.com/beaker/backer/34/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/35/website" target="_blank"><img src="https://opencollective.com/beaker/backer/35/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/36/website" target="_blank"><img src="https://opencollective.com/beaker/backer/36/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/37/website" target="_blank"><img src="https://opencollective.com/beaker/backer/37/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/38/website" target="_blank"><img src="https://opencollective.com/beaker/backer/38/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/39/website" target="_blank"><img src="https://opencollective.com/beaker/backer/39/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/40/website" target="_blank"><img src="https://opencollective.com/beaker/backer/40/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/41/website" target="_blank"><img src="https://opencollective.com/beaker/backer/41/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/42/website" target="_blank"><img src="https://opencollective.com/beaker/backer/42/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/43/website" target="_blank"><img src="https://opencollective.com/beaker/backer/43/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/44/website" target="_blank"><img src="https://opencollective.com/beaker/backer/44/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/45/website" target="_blank"><img src="https://opencollective.com/beaker/backer/45/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/46/website" target="_blank"><img src="https://opencollective.com/beaker/backer/46/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/47/website" target="_blank"><img src="https://opencollective.com/beaker/backer/47/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/48/website" target="_blank"><img src="https://opencollective.com/beaker/backer/48/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/49/website" target="_blank"><img src="https://opencollective.com/beaker/backer/49/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/50/website" target="_blank"><img src="https://opencollective.com/beaker/backer/50/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/51/website" target="_blank"><img src="https://opencollective.com/beaker/backer/51/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/52/website" target="_blank"><img src="https://opencollective.com/beaker/backer/52/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/53/website" target="_blank"><img src="https://opencollective.com/beaker/backer/53/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/54/website" target="_blank"><img src="https://opencollective.com/beaker/backer/54/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/55/website" target="_blank"><img src="https://opencollective.com/beaker/backer/55/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/56/website" target="_blank"><img src="https://opencollective.com/beaker/backer/56/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/57/website" target="_blank"><img src="https://opencollective.com/beaker/backer/57/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/58/website" target="_blank"><img src="https://opencollective.com/beaker/backer/58/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/59/website" target="_blank"><img src="https://opencollective.com/beaker/backer/59/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/60/website" target="_blank"><img src="https://opencollective.com/beaker/backer/60/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/61/website" target="_blank"><img src="https://opencollective.com/beaker/backer/61/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/62/website" target="_blank"><img src="https://opencollective.com/beaker/backer/62/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/63/website" target="_blank"><img src="https://opencollective.com/beaker/backer/63/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/64/website" target="_blank"><img src="https://opencollective.com/beaker/backer/64/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/65/website" target="_blank"><img src="https://opencollective.com/beaker/backer/65/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/66/website" target="_blank"><img src="https://opencollective.com/beaker/backer/66/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/67/website" target="_blank"><img src="https://opencollective.com/beaker/backer/67/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/68/website" target="_blank"><img src="https://opencollective.com/beaker/backer/68/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/69/website" target="_blank"><img src="https://opencollective.com/beaker/backer/69/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/70/website" target="_blank"><img src="https://opencollective.com/beaker/backer/70/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/71/website" target="_blank"><img src="https://opencollective.com/beaker/backer/71/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/72/website" target="_blank"><img src="https://opencollective.com/beaker/backer/72/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/73/website" target="_blank"><img src="https://opencollective.com/beaker/backer/73/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/74/website" target="_blank"><img src="https://opencollective.com/beaker/backer/74/avatar.svg"/></a>  <a href="https://opencollective.com/beaker/backer/75/website" target="_blank"><img src="https://opencollective.com/beaker/backer/75/avatar.svg"/></a>
 
-## Web API Clients
-
-* [pyhomebase](https://github.com/datpy/pyhomebase)
 
 ## Changelog
+
+### v3.0.0
+
+ - Added Hyperdrive support
+ - Deprecated Dat support. If you still need dat support, you'll need to use Homebase v2.
+ - Deprecated the Web API
 
 ### v2.0.0
 
@@ -575,45 +493,3 @@ This will give nodejs the rights to use ports 80 and 443. This is preferable to 
 
 The original release of `homebase` tried to mimic [Hashbase](https://github.com/beakerbrowser/hashbase) as closely as possible. As a result, it had a concept of a root domain and each dat was given a `name` which became a subdomain under that root domain. This confused most users and was generally regarded as "the worst." To simplify the config process, we removed the concept of the root domain and `name` attribute. Now, you just set the domains directly on each dat.
 
-#### Migrating to v2.0.0
-
-If your previous config file looked like this:
-
-```yaml
-domain: foo.com
-dats:
-  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    name: mysite
-    domains:
-      - mysite.com
-      - my-site.com
-```
-
-After migrating, it should look like this:
-
-```yaml
-dats:
-  - url: dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/
-    domains:
-      - mysite.foo.com
-      - mysite.com
-      - my-site.com
-```
-
-If you want to use the Web API at a domain, you should move the `domain` option to the `webapi` field. So, if your config file looked like this:
-
-```yaml
-domain: foo.com
-webapi:
-  username: admin
-  password: hunter2
-```
-
-It should be updated to look like this:
-
-```yaml
-webapi:
-  domain: foo.com
-  username: admin
-  password: hunter2
-```

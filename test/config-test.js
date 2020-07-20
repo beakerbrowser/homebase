@@ -16,8 +16,7 @@ test('empty config', t => {
   t.deepEqual(cfg.ports, {http: 80, https: 443})
   t.deepEqual(cfg.letsencrypt, false)
   t.deepEqual(cfg.dashboard, false)
-  t.deepEqual(cfg.webapi, false)
-  t.deepEqual(cfg.dats, [])
+  t.deepEqual(cfg.hyperdrives, [])
   t.deepEqual(cfg.proxies, [])
   t.deepEqual(cfg.redirects, [])
   t.deepEqual(cfg.hostnames, [])
@@ -38,10 +37,9 @@ test('full config test', t => {
       agreeTos: true
     },
     dashboard: {port: 8089},
-    webapi: {username: 'robert', password: 'hunter2', domain: 'foo.bar'},
-    dats: [
+    hyperdrives: [
       {
-        url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
+        url: 'hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
         domains: [
           'mysite.com',
           'my-site.com'
@@ -76,27 +74,24 @@ test('full config test', t => {
     agreeTos: true
   })
   t.deepEqual(cfg.dashboard, {port: 8089})
-  t.deepEqual(cfg.webapi, {username: 'robert', password: 'hunter2', domain: 'foo.bar'})
-  t.deepEqual(extractDatCfg(cfg.dats[0]), {
-    id: 'dat-1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
-    vhostType: 'dat',
-    url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
+  t.deepEqual(extractHyperdriveCfg(cfg.hyperdrives[0]), {
+    id: 'hyperdrive-1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
+    vhostType: 'hyperdrive',
+    url: 'hyper://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
     domains: [
       'mysite.com',
       'my-site.com'
     ],
     hostnames: ['mysite.com', 'my-site.com'],
-    datKey: '1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
-    storageDirectory: path.join(DATADIR, '1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03')
+    hyperdriveKey: '1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03'
   })
-  t.deepEqual(extractDatCfg(cfg.dats[1]), {
-    id: 'dat-868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
-    vhostType: 'dat',
+  t.deepEqual(extractHyperdriveCfg(cfg.hyperdrives[1]), {
+    id: 'hyperdrive-868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
+    vhostType: 'hyperdrive',
     url: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
     domains: ['othersite.com'],
     hostnames: ['othersite.com'],
-    datKey: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
-    storageDirectory: path.join(DATADIR, '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f')
+    hyperdriveKey: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f'
   })
   t.deepEqual(cfg.proxies.map(extractProxyCfg), [
     {id: 'proxy-myproxy.com', vhostType: 'proxy', hostnames: ['myproxy.com'], from: 'myproxy.com', to: 'https://mysite.com/'},
@@ -108,7 +103,7 @@ test('full config test', t => {
     {id: 'redirect-foo.redirect.edu', vhostType: 'redirect', hostnames: ['foo.redirect.edu'], from: 'foo.redirect.edu', to: 'http://localhost:8080'},
     {id: 'redirect-best-redirect-ever', vhostType: 'redirect', hostnames: ['best-redirect-ever'], from: 'best-redirect-ever', to: 'http://127.0.0.1:123'}
   ])
-  t.deepEqual(cfg.hostnames, ['foo.bar', 'mysite.com', 'my-site.com', 'othersite.com', 'myproxy.com', 'foo.proxy.edu', 'best-proxy-ever', 'myredirect.com', 'foo.redirect.edu', 'best-redirect-ever'])
+  t.deepEqual(cfg.hostnames.slice().sort(), ['mysite.com', 'my-site.com', 'othersite.com', 'myproxy.com', 'foo.proxy.edu', 'best-proxy-ever', 'myredirect.com', 'foo.redirect.edu', 'best-redirect-ever'].sort())
 })
 
 test('can do (mostly) everything disabled', t => {
@@ -118,7 +113,6 @@ test('can do (mostly) everything disabled', t => {
     httpMirror: false,
     letsencrypt: false,
     dashboard: false,
-    webapi: false
   })
   t.deepEqual(cfg.configPath, scaffold('everything-disabled.yml'))
   t.deepEqual(cfg.directory, DATADIR)
@@ -126,127 +120,18 @@ test('can do (mostly) everything disabled', t => {
   t.deepEqual(cfg.ports, {http: 80, https: 443})
   t.deepEqual(cfg.letsencrypt, false)
   t.deepEqual(cfg.dashboard, false)
-  t.deepEqual(cfg.webapi, false)
-  t.deepEqual(cfg.dats, [])
+  t.deepEqual(cfg.hyperdrives, [])
   t.deepEqual(cfg.proxies, [])
   t.deepEqual(cfg.redirects, [])
   t.deepEqual(cfg.hostnames, [])
 })
 
-test('legacy config test', t => {
-  var cfg = new HomebaseConfig(scaffold('legacy.yml'))
-
-  t.deepEqual(cfg.canonical, {
-    directory: '~/.homebase',
-    httpMirror: true,
-    ports: {
-      http: 80,
-      https: 443
-    },
-    letsencrypt: {
-      email: 'bob@foo.com',
-      agreeTos: true
-    },
-    dashboard: {port: 8089},
-    domain: 'foo.bar',
-    webapi: {domain: 'foo.bar', username: 'robert', password: 'hunter2'},
-    dats: [
-      {
-        url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-        domains: [
-          'mysite.com',
-          'my-site.com',
-          'mysite.foo.bar'
-        ]
-      },
-      {
-        url: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
-        domains: [
-          'othersite.com',
-          'othersite.foo.bar'
-        ]
-      }
-    ],
-    proxies: [
-      {from: 'myproxy.com', to: 'https://mysite.com/'},
-      {from: 'foo.proxy.edu', to: 'http://localhost:8080/'},
-      {from: 'best-proxy-ever', to: 'http://127.0.0.1:123/'}
-    ],
-    redirects: [
-      {from: 'myredirect.com', to: 'https://mysite.com'},
-      {from: 'foo.redirect.edu', to: 'http://localhost:8080'},
-      {from: 'best-redirect-ever', to: 'http://127.0.0.1:123'}
-    ]
-  })
-
-  t.deepEqual(cfg.configPath, scaffold('legacy.yml'))
-  t.deepEqual(cfg.directory, DATADIR)
-  t.deepEqual(cfg.httpMirror, true)
-  t.deepEqual(cfg.ports, {
-    http: 80,
-    https: 443
-  })
-  t.deepEqual(cfg.letsencrypt, {
-    email: 'bob@foo.com',
-    agreeTos: true
-  })
-  t.deepEqual(cfg.dashboard, {port: 8089})
-  t.deepEqual(cfg.webapi, {domain: 'foo.bar', username: 'robert', password: 'hunter2'})
-  t.deepEqual(extractDatCfg(cfg.dats[0]), {
-    id: 'dat-1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
-    vhostType: 'dat',
-    url: 'dat://1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03/',
-    domains: [
-      'mysite.com',
-      'my-site.com',
-      'mysite.foo.bar'
-    ],
-    hostnames: ['mysite.com', 'my-site.com', 'mysite.foo.bar'],
-    datKey: '1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03',
-    storageDirectory: path.join(DATADIR, '1f968afe867f06b0d344c11efc23591c7f8c5fb3b4ac938d6000f330f6ee2a03')
-  })
-  t.deepEqual(extractDatCfg(cfg.dats[1]), {
-    id: 'dat-868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
-    vhostType: 'dat',
-    url: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
-    domains: ['othersite.com', 'othersite.foo.bar'],
-    hostnames: ['othersite.com', 'othersite.foo.bar'],
-    datKey: '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f',
-    storageDirectory: path.join(DATADIR, '868d6000f330f6967f06b3ee2a03811efc23591afe0d344cc7f8c5fb3b4ac91f')
-  })
-  t.deepEqual(cfg.proxies.map(extractProxyCfg), [
-    {id: 'proxy-myproxy.com', vhostType: 'proxy', hostnames: ['myproxy.com'], from: 'myproxy.com', to: 'https://mysite.com/'},
-    {id: 'proxy-foo.proxy.edu', vhostType: 'proxy', hostnames: ['foo.proxy.edu'], from: 'foo.proxy.edu', to: 'http://localhost:8080/'},
-    {id: 'proxy-best-proxy-ever', vhostType: 'proxy', hostnames: ['best-proxy-ever'], from: 'best-proxy-ever', to: 'http://127.0.0.1:123/'}
-  ])
-  t.deepEqual(cfg.redirects.map(extractRedirectCfg), [
-    {id: 'redirect-myredirect.com', vhostType: 'redirect', hostnames: ['myredirect.com'], from: 'myredirect.com', to: 'https://mysite.com'},
-    {id: 'redirect-foo.redirect.edu', vhostType: 'redirect', hostnames: ['foo.redirect.edu'], from: 'foo.redirect.edu', to: 'http://localhost:8080'},
-    {id: 'redirect-best-redirect-ever', vhostType: 'redirect', hostnames: ['best-redirect-ever'], from: 'best-redirect-ever', to: 'http://127.0.0.1:123'}
-  ])
-  t.deepEqual(cfg.hostnames, [
-    'foo.bar',
-    'mysite.com',
-    'my-site.com',
-    'mysite.foo.bar',
-    'othersite.com',
-    'othersite.foo.bar',
-    'myproxy.com',
-    'foo.proxy.edu',
-    'best-proxy-ever',
-    'myredirect.com',
-    'foo.redirect.edu',
-    'best-redirect-ever'
-  ])
-})
-
-function extractDatCfg (cfg) {
+function extractHyperdriveCfg (cfg) {
   return {
     id: cfg.id,
     vhostType: cfg.vhostType,
     hostnames: cfg.hostnames,
-    datKey: cfg.datKey,
-    storageDirectory: cfg.storageDirectory,
+    hyperdriveKey: cfg.hyperdriveKey,
     url: cfg.url,
     domains: cfg.domains
   }

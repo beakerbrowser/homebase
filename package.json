@@ -1,7 +1,7 @@
 {
   "name": "@beaker/homebase",
-  "version": "2.0.8",
-  "description": "An easy-to-administer pinning server for Dat.",
+  "version": "3.0.0",
+  "description": "An easy-to-administer hosting server for Hyperdrive.",
   "main": "./lib/index.js",
   "bin": {
     "homebase": "./index.js"
@@ -13,12 +13,13 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "compression": "^1.7.3",
-    "dat-node": "^3.5.9",
     "express": "^4.16.3",
     "figures": "^2.0.0",
     "greenlock": "^2.3.11",
     "http-body-parser": "^1.1.9",
     "http-proxy": "^1.17.0",
+    "hyperdrive": "^10.14.1",
+    "hyperspace": "^3.6.2",
     "identify-filetype": "^1.0.0",
     "is-domain-name": "^1.0.1",
     "is-http-url": "^2.0.0",
@@ -29,7 +30,6 @@
     "mime": "^2.3.1",
     "mkdirp": "^0.5.1",
     "ms": "^2.1.1",
-    "pauls-dat-api": "^8.0.0",
     "prom-client": "^11.0.0",
     "range-parser": "^1.2.0",
     "redirect-https": "^1.1.6",
@@ -55,7 +55,9 @@
     "url": "git+https://github.com/beakerbrowser/homebase.git"
   },
   "keywords": [
-    "dat",
+    "hyper",
+    "hyperdrive",
+    "hyperspace",
     "server"
   ],
   "author": "Paul Frazee <pfrazee@gmail.com>",
