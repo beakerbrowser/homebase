@@ -81,7 +81,7 @@ pm2 stop homebase
 
 ### Example: set up a hyperdrive with HTTP mirroring
 
-This configuration file will hot the files at `hyper://123...456` and mirror those files to `http://alice.com`.
+This configuration file will host the files at `hyper://123...456` and mirror those files to `http://alice.com`.
 
 This example uses a domain name, so in order for the domain name to resolve correctly, you'll need to update your DNS configuration first. In this case, you could set an `A` record that points to the `homebase` server's IP address.
 
