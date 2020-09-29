@@ -1,6 +1,6 @@
 {
   "name": "@beaker/homebase",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "An easy-to-administer hosting server for Hyperdrive.",
   "main": "./lib/index.js",
   "bin": {
